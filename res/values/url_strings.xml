@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="url_v3_request" translatable="false">https://getpocket.com/v3/oauth/request</string>
+    <string name="url_authrize" translatable="false">https://getpocket.com/auth/authorize</string>
+    <string name="url_v3_authrize" translatable="false">https://getpocket.com/v3/oauth/authorize</string>
+
+</resources>
