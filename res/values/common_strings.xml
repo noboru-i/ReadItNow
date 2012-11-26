@@ -1,5 +1,5 @@
 <resources>
 
-	<string name="pocket_api_key" translatable="false">10633-60f45438c2b0e5f6a98387fe</string>
+	<string name="pocket_api_key" translatable="false"></string>
 
 </resources>
