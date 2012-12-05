@@ -1,4 +1,6 @@
-package hm.orz.chaos114.android.readitnow;
+package hm.orz.chaos114.android.readitnow.ui;
+
+import hm.orz.chaos114.android.readitnow.R;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,13 +31,17 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.d(TAG, "#onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		Intent intent = getIntent();
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
 			Uri data = intent.getData();
-			if (data != null && "authorizationFinished".equals(data.getEncodedAuthority())) {
+			Log.d(TAG, "data = " + data);
+			if (data != null
+					&& "authorizationFinished".equals(data
+							.getEncodedAuthority())) {
 				SharedPreferences preferences = PreferenceManager
 						.getDefaultSharedPreferences(getApplicationContext());
 				final String requestToken = preferences.getString(
@@ -50,17 +56,21 @@ public class MainActivity extends Activity {
 						}
 						return true;
 					}
+
 					@Override
 					protected void onPostExecute(Boolean result) {
 						if (!result) {
 							// 認証失敗
-							Toast.makeText(MainActivity.this, "認証に失敗しました", Toast.LENGTH_LONG).show();
+							Toast.makeText(MainActivity.this, "認証に失敗しました",
+									Toast.LENGTH_LONG).show();
 							return;
 						}
 						SharedPreferences preferences = PreferenceManager
 								.getDefaultSharedPreferences(getApplicationContext());
-						String username = preferences.getString("USERNAME", null);
-						TextView view = (TextView)MainActivity.this.findViewById(R.id.main_test);
+						String username = preferences.getString("USERNAME",
+								null);
+						TextView view = (TextView) MainActivity.this
+								.findViewById(R.id.main_test);
 						view.setText("Hello " + username);
 					}
 				};
@@ -104,13 +114,12 @@ public class MainActivity extends Activity {
 	}
 
 	private void startOauthActivity(String requestToken) {
-		String url = getString(R.string.url_authrize);
 		Uri.Builder builder = new Uri.Builder();
 		builder.appendQueryParameter("request_token", requestToken);
 		builder.appendQueryParameter("redirect_uri",
 				"readitnow://authorizationFinished");
 		String queryString = builder.build().toString();
-		url = getString(R.string.url_authrize);
+		String url = getString(R.string.url_authrize);
 		Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_VIEW);
 		intent.setData(Uri.parse(url + queryString));

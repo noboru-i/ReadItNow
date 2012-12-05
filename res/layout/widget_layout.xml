@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/widget_margin"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+     >
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="999"
+        android:textSize="32sp"
+        android:textColor="#333333"
+        android:shadowColor="#eeeeee"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="1.5"
+        android:gravity="center" />
+
+</LinearLayout>

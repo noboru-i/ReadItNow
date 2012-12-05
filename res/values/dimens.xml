@@ -1,0 +1,4 @@
+<resources>
+     <!-- Widget -->
+    <dimen name="widget_margin">8dp</dimen>
+</resources>

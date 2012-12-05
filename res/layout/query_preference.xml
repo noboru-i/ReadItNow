@@ -1,0 +1,72 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Preference
+        android:layout="@layout/admob_preference"
+        android:selectable="false" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="input state"
+        android:key="state"
+        android:summary="edittext_summary"
+        android:title="state" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="input tag"
+        android:key="tag"
+        android:summary="edittext_summary"
+        android:title="tag" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="input contentType"
+        android:key="contentType"
+        android:summary="edittext_summary"
+        android:title="contentType" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="input sort"
+        android:key="sort"
+        android:summary="edittext_summary"
+        android:title="sort" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="input detailType"
+        android:key="detailType"
+        android:summary="edittext_summary"
+        android:title="detailType" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="input search"
+        android:key="search"
+        android:summary="edittext_summary"
+        android:title="search" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="input domain"
+        android:key="domain"
+        android:summary="edittext_summary"
+        android:title="domain" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="input since"
+        android:key="since"
+        android:summary="edittext_summary"
+        android:title="since" />
+
+    <hm.orz.chaos114.android.readitnow.ui.ButtonPreference
+        android:id="@+id/buttom_pref"
+        android:key="complete_button"
+        android:layout="@layout/button_preference"
+        button_text="OK"
+        android:selectable="false" />
+
+</PreferenceScreen>
