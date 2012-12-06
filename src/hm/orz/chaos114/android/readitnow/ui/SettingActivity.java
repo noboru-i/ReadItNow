@@ -1,14 +1,12 @@
 package hm.orz.chaos114.android.readitnow.ui;
 
 import hm.orz.chaos114.android.readitnow.R;
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.RemoteViews;
 
 public class SettingActivity extends PreferenceActivity {
 	private static final String TAG = SettingActivity.class.getSimpleName();
@@ -45,15 +43,6 @@ public class SettingActivity extends PreferenceActivity {
 
 	private void finishConfigure() {
 		Log.d(TAG, "#finishConfigure");
-		Log.d(TAG, "mAppWidgetId = " + mAppWidgetId);
-		RemoteViews views = new RemoteViews(getPackageName(),
-				R.layout.widget_layout);
-		Intent intent = new Intent(this, MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, mAppWidgetId, intent, 0);
-		views.setOnClickPendingIntent(R.id.text_view, pendingIntent);
-		AppWidgetManager manager = AppWidgetManager.getInstance(this);
-		manager.updateAppWidget(mAppWidgetId, views);
 
 		// Make sure we pass back the original appWidgetId
 		Intent resultValue = new Intent();
