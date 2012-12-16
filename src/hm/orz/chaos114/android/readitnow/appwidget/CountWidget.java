@@ -1,7 +1,7 @@
 package hm.orz.chaos114.android.readitnow.appwidget;
 
 import hm.orz.chaos114.android.readitnow.R;
-import hm.orz.chaos114.android.readitnow.ui.MainActivity;
+import hm.orz.chaos114.android.readitnow.ui.ArticleListActivity;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -30,7 +30,7 @@ public class CountWidget extends AppWidgetProvider {
 		for (int appWidgetId : appWidgetIds) {
 			RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
 					R.layout.widget_layout);
-			Intent intent = new Intent(context, MainActivity.class);
+			Intent intent = new Intent(context, ArticleListActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent, 0);
 			remoteViews.setOnClickPendingIntent(R.id.text_view, pendingIntent);
