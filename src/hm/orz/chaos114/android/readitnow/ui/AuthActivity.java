@@ -25,9 +25,9 @@ public class AuthActivity extends SherlockFragmentActivity {
 
 	private static final String SCHEME = "readitnow";
 	private static final String AUTHORIZATION_FINISHED = "authorizationFinished";
-	private static final String PREFERENCE_REQUEST_TOKEN = "request_token";
-	private static final String PREFERENCE_ACCESS_TOKEN = "access_token";
-	private static final String PREFERENCE_USER_NAME = "user_name";
+	public static final String PREFERENCE_REQUEST_TOKEN = "request_token";
+	public static final String PREFERENCE_ACCESS_TOKEN = "access_token";
+	public static final String PREFERENCE_USER_NAME = "user_name";
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
