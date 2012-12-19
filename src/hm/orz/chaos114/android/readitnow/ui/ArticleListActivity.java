@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import pocket4j.Item;
 import android.app.ProgressDialog;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,11 +37,24 @@ import com.actionbarsherlock.view.SubMenu;
 public class ArticleListActivity extends SherlockFragmentActivity {
 	private static final String TAG = ArticleListActivity.class.getSimpleName();
 
+	private int mAppWidgetId;
+
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_article_list);
+
+		final Intent intent = getIntent();
+		mAppWidgetId = intent.getIntExtra(
+				AppWidgetManager.EXTRA_APPWIDGET_ID,
+				AppWidgetManager.INVALID_APPWIDGET_ID);
+
+		if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+			// デフォルト値が返却された場合、終了
+			finish();
+			return;
+		}
 
 		init();
 	}
@@ -66,7 +80,9 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			startActivity(new Intent(this, AuthActivity.class));
 			break;
 		case 2:
-			startActivity(new Intent(this, SettingActivity.class));
+			final Intent intent = new Intent(this, SettingActivity.class);
+			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+			startActivity(intent);
 			break;
 		}
 		return true;
@@ -95,23 +111,26 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 						ArticleListActivity.this, 0, result);
 				final ListView list = (ListView) findViewById(R.id.article_list);
 				list.setAdapter(adapter);
-				list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(final AdapterView<?> parent,
-							final View view, final int position, final long id) {
-						final Item item = (Item) parent
-								.getItemAtPosition(position);
-						Log.d(TAG, "item = " + item);
-						final Intent intent = new Intent(Intent.ACTION_VIEW,
-								Uri.parse(item.getResolvedUrl()));
-						startActivity(intent);
-					}
-				});
 
 				dialog.dismiss();
 			}
 		};
 		task.execute((Void) null);
+
+		final ListView list = (ListView) findViewById(R.id.article_list);
+		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(final AdapterView<?> parent,
+					final View view, final int position, final long id) {
+				final Item item = (Item) parent.getItemAtPosition(position);
+				Log.d(TAG, "item = " + item);
+
+				// ブラウザを起動
+				final Intent intent = new Intent(Intent.ACTION_VIEW, Uri
+						.parse(item.getResolvedUrl()));
+				startActivity(intent);
+			}
+		});
 	}
 
 	private List<Item> fetchArticle() {

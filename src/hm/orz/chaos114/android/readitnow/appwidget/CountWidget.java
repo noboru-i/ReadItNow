@@ -1,14 +1,10 @@
 package hm.orz.chaos114.android.readitnow.appwidget;
 
-import hm.orz.chaos114.android.readitnow.R;
-import hm.orz.chaos114.android.readitnow.ui.ArticleListActivity;
-import android.app.PendingIntent;
+import hm.orz.chaos114.android.readitnow.util.WidgetUtil;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 public class CountWidget extends AppWidgetProvider {
 	private static final String TAG = CountWidget.class.getSimpleName();
@@ -16,35 +12,29 @@ public class CountWidget extends AppWidgetProvider {
 	public static final String EXTRA_APP_WIDGET_ID = "appWidgetId";
 
 	@Override
-	public void onEnabled(Context context) {
+	public void onEnabled(final Context context) {
 		Log.d(TAG, "#onEnabled");
 	}
 
 	@Override
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-			int[] appWidgetIds) {
+	public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
+			final int[] appWidgetIds) {
 		Log.d(TAG, "#onUpdate");
 		Log.d(TAG, "appWidgetIds.length = " + appWidgetIds.length);
 		Log.d(TAG, "appWidgetIds[0] = " + appWidgetIds[0]);
 
-		for (int appWidgetId : appWidgetIds) {
-			RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-					R.layout.widget_layout);
-			Intent intent = new Intent(context, ArticleListActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent, 0);
-			remoteViews.setOnClickPendingIntent(R.id.text_view, pendingIntent);
-			appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+		for (final int appWidgetId : appWidgetIds) {
+			WidgetUtil.update(context, appWidgetId);
 		}
 	}
 
 	@Override
-	public void onDeleted(Context context, int[] appWidgetIds) {
+	public void onDeleted(final Context context, final int[] appWidgetIds) {
 		Log.d(TAG, "#onDeleted");
 	}
 
 	@Override
-	public void onDisabled(Context context) {
+	public void onDisabled(final Context context) {
 		Log.d(TAG, "#onDisabled");
 	}
 }
