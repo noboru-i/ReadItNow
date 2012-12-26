@@ -34,7 +34,7 @@ public class Item {
 			hasImage = source.getInt("has_image");
 			hasVideo = source.getInt("has_video");
 			wordCount = source.getInt("word_count");
-			tags = source.getJSONObject("tags");
+			// tags = source.getJSONObject("tags");
 		} catch (final JSONException e) {
 			throw new RuntimeException(e);
 		}

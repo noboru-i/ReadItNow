@@ -13,14 +13,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import pocket4j.Item;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,13 +42,10 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
-		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_article_list);
 
 		final Intent intent = getIntent();
-		mAppWidgetId = intent.getIntExtra(
-				AppWidgetManager.EXTRA_APPWIDGET_ID,
+		mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 				AppWidgetManager.INVALID_APPWIDGET_ID);
 
 		if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
@@ -56,7 +54,34 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			return;
 		}
 
-		init();
+		// 認証情報の確認
+		if (!hasAuthorization()) {
+			setContentView(R.layout.activity_article_list_unauthorize);
+			final TextView textView = (TextView) findViewById(R.id.main_test);
+			textView.setText("認証を行なってください。");
+			// 未認証時の処理
+			new AlertDialog.Builder(this)
+					.setMessage("認証を行なってください。")
+					.setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(
+										final DialogInterface dialog,
+										final int which) {
+									startAuthActivity();
+								}
+							}).show();
+			return;
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (hasAuthorization()) {
+			init();
+		}
 	}
 
 	@Override
@@ -77,24 +102,25 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			final com.actionbarsherlock.view.MenuItem item) {
 		switch (item.getItemId()) {
 		case 1:
-			startActivity(new Intent(this, AuthActivity.class));
+			startAuthActivity();
 			break;
 		case 2:
-			final Intent intent = new Intent(this, SettingActivity.class);
-			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
-			startActivity(intent);
+			startSettingActivity();
 			break;
 		}
 		return true;
 	}
 
 	private void init() {
+		setContentView(R.layout.activity_article_list);
+
 		final AsyncTask<Void, Void, List<Item>> task = new AsyncTask<Void, Void, List<Item>>() {
 
-			ProgressDialog dialog = new ProgressDialog(ArticleListActivity.this);
+			ProgressDialog dialog;
 
 			@Override
 			protected void onPreExecute() {
+				dialog = new ProgressDialog(ArticleListActivity.this);
 				dialog.setMessage(getString(R.string.dialog_loading_message));
 				dialog.show();
 			}
@@ -123,7 +149,6 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			public void onItemClick(final AdapterView<?> parent,
 					final View view, final int position, final long id) {
 				final Item item = (Item) parent.getItemAtPosition(position);
-				Log.d(TAG, "item = " + item);
 
 				// ブラウザを起動
 				final Intent intent = new Intent(Intent.ACTION_VIEW, Uri
@@ -154,13 +179,11 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		try {
 			final String response = ServerUtil.postJson(url, params);
 			final JSONObject object = new JSONObject(response);
-			Log.d(TAG, object.toString(2));
 			final JSONObject list = object.getJSONObject("list");
 			final Iterator<?> ite = list.keys();
 			while (ite.hasNext()) {
 				final Item item = new Item(list.getJSONObject((String) ite
 						.next()));
-				Log.d(TAG, "item = " + item);
 				items.add(item);
 			}
 		} catch (final IOException e) {
@@ -170,6 +193,26 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		}
 
 		return items;
+	}
+
+	private void startAuthActivity() {
+		startActivity(new Intent(this, AuthActivity.class));
+	}
+
+	private void startSettingActivity() {
+		final Intent intent = new Intent(this, SettingActivity.class);
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+		startActivity(intent);
+	}
+
+	private boolean hasAuthorization() {
+		final PreferenceUtil preferenceUtil = new PreferenceUtil(this);
+		final String accessToken = preferenceUtil
+				.getString(AuthActivity.PREFERENCE_ACCESS_TOKEN);
+		if (accessToken == null) {
+			return false;
+		}
+		return true;
 	}
 
 	class ArticleAdapter extends ArrayAdapter<Item> {

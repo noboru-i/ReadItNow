@@ -31,7 +31,6 @@ public class AuthActivity extends SherlockFragmentActivity {
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
-		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_auth);
 
