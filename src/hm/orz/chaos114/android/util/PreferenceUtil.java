@@ -1,5 +1,7 @@
 package hm.orz.chaos114.android.util;
 
+import java.util.Map;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -7,7 +9,7 @@ import android.preference.PreferenceManager;
 
 /**
  * Preferenceのユーティリティクラス
- * 
+ *
  * @author ishikuranoboru
  */
 public class PreferenceUtil {
@@ -48,7 +50,11 @@ public class PreferenceUtil {
 	public boolean getBoolean(final String key) {
 		return sp.getBoolean(key, false);
 	}
-	
+
+	public Map<String, ?> getAll() {
+		return sp.getAll();
+	}
+
 	public void remove(final String key) {
 		final Editor editor = sp.edit();
 		editor.remove(key);

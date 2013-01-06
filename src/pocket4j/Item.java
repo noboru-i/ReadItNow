@@ -4,20 +4,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Item {
-	int itemId;
-	int resolvedId;
-	String givenUrl;
-	String resolvedUrl;
-	String givenTitle;
-	String resolvedTitle;
-	int favorite;
-	int status;
-	String excerpt;
-	int isArticle;
-	int hasImage;
-	int hasVideo;
-	int wordCount;
-	JSONObject tags;
+	private int itemId;
+	private int resolvedId;
+	private String givenUrl;
+	private String resolvedUrl;
+	private String givenTitle;
+	private String resolvedTitle;
+	private int favorite;
+	private int status;
+	private String excerpt;
+	private int isArticle;
+	private int hasImage;
+	private int hasVideo;
+	private int wordCount;
+	private int sortId;
+	private JSONObject tags;
 
 	public Item(final JSONObject source) {
 		try {
@@ -34,6 +35,7 @@ public class Item {
 			hasImage = source.getInt("has_image");
 			hasVideo = source.getInt("has_video");
 			wordCount = source.getInt("word_count");
+			sortId = source.getInt("sort_id");
 			// tags = source.getJSONObject("tags");
 		} catch (final JSONException e) {
 			throw new RuntimeException(e);
@@ -144,6 +146,14 @@ public class Item {
 		this.wordCount = wordCount;
 	}
 
+	public int getSortId() {
+		return sortId;
+	}
+
+	public void setSortId(final int sortId) {
+		this.sortId = sortId;
+	}
+
 	public JSONObject getTags() {
 		return tags;
 	}
@@ -185,5 +195,31 @@ public class Item {
 		builder.append(tags);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + itemId;
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Item other = (Item) obj;
+		if (itemId != other.itemId) {
+			return false;
+		}
+		return true;
 	}
 }

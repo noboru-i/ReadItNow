@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="state_entries">
+        <item>all</item>
+        <item>unread</item>
+        <item>archive</item>
+    </string-array>
+    <string-array name="state_entryvalues">
+        <item></item>
+        <item>unread</item>
+        <item>archive</item>
+    </string-array>
+    <string-array name="favorite_entries">
+        <item>all</item>
+        <item>un-favorited</item>
+        <item>favorited</item>
+    </string-array>
+    <string-array name="favorite_entryvalues">
+        <item></item>
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="contenttype_entries">
+        <item>all</item>
+        <item>article</item>
+        <item>video</item>
+        <item>image</item>
+    </string-array>
+    <string-array name="contenttype_entryvalues">
+        <item></item>
+        <item>article</item>
+        <item>video</item>
+        <item>image</item>
+    </string-array>
+
+    <string-array name="sort_entries">
+        <item>newest</item>
+        <item>oldest</item>
+        <item>title</item>
+        <item>site</item>
+    </string-array>
+    <string-array name="sort_entryvalues">
+        <item>newest</item>
+        <item>oldest</item>
+        <item>title</item>
+        <item>site</item>
+    </string-array>
+</resources>

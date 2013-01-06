@@ -4,4 +4,6 @@
     <string name="menu_settings">Settings</string>
 
     <string name="dialog_loading_message">Loading...</string>
+    <string name="dialog_quit_without_saving">保存せずに終了しますか？</string>
+    <string name="dialog_list_without_auth">Pocket(Formerly Read It Later)アカウントで認証を行なってください。</string>
 </resources>

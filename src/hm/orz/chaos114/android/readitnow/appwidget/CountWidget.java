@@ -23,6 +23,7 @@ public class CountWidget extends AppWidgetProvider {
 		Log.d(TAG, "appWidgetIds.length = " + appWidgetIds.length);
 		Log.d(TAG, "appWidgetIds[0] = " + appWidgetIds[0]);
 
+
 		for (final int appWidgetId : appWidgetIds) {
 			WidgetUtil.update(context, appWidgetId);
 		}

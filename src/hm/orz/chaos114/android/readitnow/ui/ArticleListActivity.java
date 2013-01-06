@@ -1,18 +1,17 @@
 package hm.orz.chaos114.android.readitnow.ui;
 
 import hm.orz.chaos114.android.readitnow.R;
+import hm.orz.chaos114.android.readitnow.util.WidgetUtil;
 import hm.orz.chaos114.android.util.PreferenceUtil;
-import hm.orz.chaos114.android.util.ServerUtil;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Map;
 
 import pocket4j.Item;
+import pocket4j.Pocket;
+import pocket4j.RetrieveOptions;
+import pocket4j.auth.Authorization;
+import pocket4j.conf.Configuration;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
@@ -40,6 +39,8 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 	private int mAppWidgetId;
 
+	private Pocket mPocket;
+
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,14 +55,28 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			return;
 		}
 
-		// 認証情報の確認
+		// Pocketインスタンスを生成
+		final String accessToken = new PreferenceUtil(this)
+				.getString(AuthActivity.PREFERENCE_ACCESS_TOKEN);
+		final Configuration configuration = new Configuration(this);
+		final Authorization authorization = new Authorization(accessToken);
+		mPocket = new Pocket(authorization, configuration);
+
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
 		if (!hasAuthorization()) {
+			// 未認証画面を表示
 			setContentView(R.layout.activity_article_list_unauthorize);
 			final TextView textView = (TextView) findViewById(R.id.main_test);
-			textView.setText("認証を行なってください。");
+			textView.setText(R.string.dialog_list_without_auth);
+
 			// 未認証時の処理
 			new AlertDialog.Builder(this)
-					.setMessage("認証を行なってください。")
+					.setMessage(R.string.dialog_list_without_auth)
 					.setPositiveButton("OK",
 							new DialogInterface.OnClickListener() {
 								@Override
@@ -73,20 +88,24 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 							}).show();
 			return;
 		}
-	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		if (hasAuthorization()) {
-			init();
-		}
+		// 認証されている場合は、リストを表示
+		final String accessToken = new PreferenceUtil(this)
+				.getString(AuthActivity.PREFERENCE_ACCESS_TOKEN);
+		final Authorization authorization = new Authorization(accessToken);
+		mPocket.setAuthorization(authorization);
+		init();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(
 			final com.actionbarsherlock.view.Menu menu) {
+		// リフレッシュボタン
+		menu.add(Menu.NONE, 3, Menu.NONE, "refresh")
+				.setIcon(android.R.drawable.ic_menu_rotate)
+				.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+		// 設定ボタン
 		final SubMenu sub = menu.addSubMenu("Setting").setIcon(
 				android.R.drawable.ic_menu_preferences);
 		sub.add(Menu.NONE, 1, Menu.NONE, "Account");
@@ -94,6 +113,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		sub.getItem().setShowAsAction(
 				MenuItem.SHOW_AS_ACTION_ALWAYS
 						| MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
 		return true;
 	}
 
@@ -107,11 +127,31 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		case 2:
 			startSettingActivity();
 			break;
+		case 3:
+			init();
+			break;
 		}
 		return true;
 	}
 
+	@Override
+	protected void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		outState.putSerializable("pocket", mPocket);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(final Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+
+		mPocket = (Pocket) savedInstanceState.getSerializable("pocket");
+	}
+
 	private void init() {
+		if (!hasAuthorization()) {
+			return;
+		}
 		setContentView(R.layout.activity_article_list);
 
 		final AsyncTask<Void, Void, List<Item>> task = new AsyncTask<Void, Void, List<Item>>() {
@@ -127,7 +167,13 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 			@Override
 			protected List<Item> doInBackground(final Void... params) {
-				final List<Item> items = fetchArticle();
+				final PreferenceUtil preferenceUtil = new PreferenceUtil(
+						ArticleListActivity.this);
+
+				final RetrieveOptions options = RetrieveOptions
+						.createInstance((Map<String, String>) preferenceUtil
+								.getAll());
+				final List<Item> items = mPocket.get(options);
 				return items;
 			}
 
@@ -137,6 +183,9 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 						ArticleListActivity.this, 0, result);
 				final ListView list = (ListView) findViewById(R.id.article_list);
 				list.setAdapter(adapter);
+
+				WidgetUtil.updateWidget(ArticleListActivity.this, mAppWidgetId,
+						Integer.toString(result.size()));
 
 				dialog.dismiss();
 			}
@@ -156,43 +205,6 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 				startActivity(intent);
 			}
 		});
-	}
-
-	private List<Item> fetchArticle() {
-		final PreferenceUtil preferenceUtil = new PreferenceUtil(this);
-		final String accessToken = preferenceUtil
-				.getString(AuthActivity.PREFERENCE_ACCESS_TOKEN);
-		final String url = getString(R.string.url_v3_get);
-		final String consumerKey = getString(R.string.pocket_api_key);
-
-		final JSONObject params = new JSONObject();
-		try {
-			params.put("consumer_key", consumerKey);
-			params.put("access_token", accessToken);
-			params.put("detailType", "complete");
-			params.put("sort", "newest");
-		} catch (final JSONException e) {
-			throw new RuntimeException(e);
-		}
-
-		final List<Item> items = new ArrayList<Item>();
-		try {
-			final String response = ServerUtil.postJson(url, params);
-			final JSONObject object = new JSONObject(response);
-			final JSONObject list = object.getJSONObject("list");
-			final Iterator<?> ite = list.keys();
-			while (ite.hasNext()) {
-				final Item item = new Item(list.getJSONObject((String) ite
-						.next()));
-				items.add(item);
-			}
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		} catch (final JSONException e) {
-			throw new RuntimeException(e);
-		}
-
-		return items;
 	}
 
 	private void startAuthActivity() {

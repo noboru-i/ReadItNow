@@ -18,6 +18,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
@@ -143,7 +145,7 @@ public final class ServerUtil {
 
 	/**
 	 * APサーバにPOSTリクエストを発行する。
-	 * 
+	 *
 	 * @param endpoint リクエストURL
 	 * @param params リクエストパラメータ
 	 * @return レスポンス文字列
@@ -153,6 +155,10 @@ public final class ServerUtil {
 			throws IOException {
 		Log.i(TAG, "endpoint = " + endpoint);
 		final DefaultHttpClient httpClient = new DefaultHttpClient();
+		final HttpParams httpParams = httpClient.getParams();
+		HttpConnectionParams.setConnectionTimeout(httpParams, 5000); // 接続のタイムアウトは5秒
+		HttpConnectionParams.setSoTimeout(httpParams, 10000); // データ取得のタイムアウトは10秒
+
 		final HttpPost httpPost = new HttpPost(endpoint);
 
 		try {
@@ -163,7 +169,9 @@ public final class ServerUtil {
 		} catch (final UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}
+		Log.d(TAG, "preExecute");
 		final HttpResponse response = httpClient.execute(httpPost);
+		Log.d(TAG, "postExecute");
 		final String responseString = EntityUtils
 				.toString(response.getEntity());
 		Log.i(TAG, "response = " + responseString);

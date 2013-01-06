@@ -151,6 +151,11 @@ public class AuthActivity extends SherlockFragmentActivity {
 							Toast.LENGTH_LONG).show();
 					return;
 				}
+
+				// widgetの更新
+				// TODO
+
+				// viewの更新
 				showAuthorizedView();
 			}
 		};
@@ -191,6 +196,8 @@ public class AuthActivity extends SherlockFragmentActivity {
 		final String url = getString(R.string.url_authrize);
 		final Intent intent = new Intent();
 		intent.setAction(Intent.ACTION_VIEW);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+				| Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
 		intent.setData(Uri.parse(url + queryString));
 		startActivity(intent);
 	}
