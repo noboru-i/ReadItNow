@@ -1,9 +1,13 @@
 package pocket4j;
 
+import java.io.Serializable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Item {
+public class Item implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private int itemId;
 	private int resolvedId;
 	private String givenUrl;

@@ -22,8 +22,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,7 +30,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.SubMenu;
+import com.actionbarsherlock.view.MenuInflater;
 
 public class ArticleListActivity extends SherlockFragmentActivity {
 	private static final String TAG = ArticleListActivity.class.getSimpleName();
@@ -100,35 +98,25 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(
 			final com.actionbarsherlock.view.Menu menu) {
-		// リフレッシュボタン
-		menu.add(Menu.NONE, 3, Menu.NONE, "refresh")
-				.setIcon(android.R.drawable.ic_menu_rotate)
-				.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-		// 設定ボタン
-		final SubMenu sub = menu.addSubMenu("Setting").setIcon(
-				android.R.drawable.ic_menu_preferences);
-		sub.add(Menu.NONE, 1, Menu.NONE, "Account");
-		sub.add(Menu.NONE, 2, Menu.NONE, "Setting");
-		sub.getItem().setShowAsAction(
-				MenuItem.SHOW_AS_ACTION_ALWAYS
-						| MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-
-		return true;
+		final MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.activity_main, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(
 			final com.actionbarsherlock.view.MenuItem item) {
 		switch (item.getItemId()) {
-		case 1:
+		case R.id.menu_refresh:
+			final ArticleListFileUtil fileUtil = new ArticleListFileUtil(this);
+			fileUtil.deleteList();
+			init();
+			break;
+		case R.id.menu_account:
 			startAuthActivity();
 			break;
-		case 2:
+		case R.id.menu_setting:
 			startSettingActivity();
-			break;
-		case 3:
-			init();
 			break;
 		}
 		return true;
@@ -152,7 +140,11 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		if (!hasAuthorization()) {
 			return;
 		}
-		setContentView(R.layout.activity_article_list);
+		ListView list = (ListView) findViewById(R.id.article_list);
+		if (list == null) {
+			setContentView(R.layout.activity_article_list);
+			list = (ListView) findViewById(R.id.article_list);
+		}
 
 		final AsyncTask<Void, Void, List<Item>> task = new AsyncTask<Void, Void, List<Item>>() {
 
@@ -167,13 +159,21 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 			@Override
 			protected List<Item> doInBackground(final Void... params) {
+				final ArticleListFileUtil fileUtil = new ArticleListFileUtil(
+						ArticleListActivity.this);
+				final List<Item> loadItems = fileUtil.loadList();
+				if (loadItems != null) {
+					// 保存してある情報があれば、それを表示する
+					return loadItems;
+				}
+
 				final PreferenceUtil preferenceUtil = new PreferenceUtil(
 						ArticleListActivity.this);
-
 				final RetrieveOptions options = RetrieveOptions
 						.createInstance((Map<String, String>) preferenceUtil
 								.getAll());
 				final List<Item> items = mPocket.get(options);
+				fileUtil.saveList(items);
 				return items;
 			}
 
@@ -192,7 +192,6 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		};
 		task.execute((Void) null);
 
-		final ListView list = (ListView) findViewById(R.id.article_list);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(final AdapterView<?> parent,
@@ -259,6 +258,5 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			excerptTextView.setText(item.getExcerpt());
 			return view;
 		}
-
 	}
 }

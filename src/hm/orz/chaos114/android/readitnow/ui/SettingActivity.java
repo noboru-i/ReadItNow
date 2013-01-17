@@ -108,8 +108,14 @@ public class SettingActivity extends PreferenceActivity {
 	private void finishConfigure() {
 		Log.d(TAG, "#finishConfigure");
 
+		// 保持している情報を一旦削除
+		final ArticleListFileUtil fileUtil = new ArticleListFileUtil(this);
+		fileUtil.deleteList();
+
+		// widgetの件数を更新
 		WidgetUtil.update(this, mAppWidgetId);
 
+		// Activityを正常終了
 		final Intent resultValue = new Intent();
 		resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
 		setResult(RESULT_OK, resultValue);
