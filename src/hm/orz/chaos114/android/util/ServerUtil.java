@@ -83,7 +83,7 @@ public final class ServerUtil {
 
 	/**
 	 * APサーバにPOSTリクエストを発行する。
-	 *
+	 * 
 	 * @param endpoint リクエストURL
 	 * @param params リクエストパラメータ
 	 * @return レスポンス文字列
@@ -145,7 +145,7 @@ public final class ServerUtil {
 
 	/**
 	 * APサーバにPOSTリクエストを発行する。
-	 *
+	 * 
 	 * @param endpoint リクエストURL
 	 * @param params リクエストパラメータ
 	 * @return レスポンス文字列

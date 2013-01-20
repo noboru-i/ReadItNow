@@ -1,7 +1,13 @@
 package hm.orz.chaos114.android.readitnow.ui;
 
 import hm.orz.chaos114.android.readitnow.R;
+import hm.orz.chaos114.android.readitnow.util.ArticleListFileUtil;
+import hm.orz.chaos114.android.readitnow.util.SettingPreferenceUtil;
 import hm.orz.chaos114.android.readitnow.util.WidgetUtil;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
@@ -27,6 +33,7 @@ public class SettingActivity extends PreferenceActivity {
 	protected void onCreate(final Bundle savedInstanceState) {
 		Log.d(TAG, "#onCreate");
 		super.onCreate(savedInstanceState);
+
 		addPreferencesFromResource(R.layout.query_preference);
 
 		mAppWidgetId = getIntent().getIntExtra(
@@ -48,6 +55,7 @@ public class SettingActivity extends PreferenceActivity {
 		});
 
 		initValues();
+		initSummary();
 	}
 
 	@Override
@@ -91,6 +99,26 @@ public class SettingActivity extends PreferenceActivity {
 	}
 
 	private void initValues() {
+		// 値を設定
+		final SettingPreferenceUtil preferenceUtil = new SettingPreferenceUtil(
+				this, mAppWidgetId);
+		final Map<String, String> allMap = preferenceUtil.getAll();
+		for (final String key : keys) {
+			final Preference preference = findPreference(key);
+			if (!allMap.containsKey(key)) {
+				continue;
+			}
+			final String value = allMap.get(key);
+			if (preference instanceof ListPreference) {
+				((ListPreference) preference).setValue(value);
+			} else if (preference instanceof EditTextPreference) {
+				((EditTextPreference) preference).setText(value);
+			}
+		}
+	}
+
+	private void initSummary() {
+		// Summaryの設定
 		for (final String key : keys) {
 			final Preference preference = findPreference(key);
 			if (preference instanceof ListPreference) {
@@ -108,8 +136,12 @@ public class SettingActivity extends PreferenceActivity {
 	private void finishConfigure() {
 		Log.d(TAG, "#finishConfigure");
 
+		// 設定値を保存
+		savePreference();
+
 		// 保持している情報を一旦削除
-		final ArticleListFileUtil fileUtil = new ArticleListFileUtil(this);
+		final ArticleListFileUtil fileUtil = new ArticleListFileUtil(this,
+				mAppWidgetId);
 		fileUtil.deleteList();
 
 		// widgetの件数を更新
@@ -120,6 +152,27 @@ public class SettingActivity extends PreferenceActivity {
 		resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
 		setResult(RESULT_OK, resultValue);
 		finish();
+	}
+
+	private void savePreference() {
+		// 設定された値をMapにする
+		final Map<String, String> map = new HashMap<String, String>();
+		for (final String key : keys) {
+			final Preference preference = findPreference(key);
+			if (preference instanceof ListPreference) {
+				final String value = ((ListPreference) preference).getValue();
+				map.put(key, value);
+			} else if (preference instanceof EditTextPreference) {
+				final String value = ((EditTextPreference) preference)
+						.getText();
+				map.put(key, value);
+			}
+		}
+
+		// 設定値を保存する
+		final SettingPreferenceUtil preferenceUtil = new SettingPreferenceUtil(
+				this, mAppWidgetId);
+		preferenceUtil.putAll(map);
 	}
 
 	private static final String[] keys = { "state", "favorite", "tag",

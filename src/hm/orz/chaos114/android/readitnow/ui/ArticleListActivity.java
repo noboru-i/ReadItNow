@@ -1,11 +1,12 @@
 package hm.orz.chaos114.android.readitnow.ui;
 
 import hm.orz.chaos114.android.readitnow.R;
+import hm.orz.chaos114.android.readitnow.util.ArticleListFileUtil;
+import hm.orz.chaos114.android.readitnow.util.SettingPreferenceUtil;
 import hm.orz.chaos114.android.readitnow.util.WidgetUtil;
 import hm.orz.chaos114.android.util.PreferenceUtil;
 
 import java.util.List;
-import java.util.Map;
 
 import pocket4j.Item;
 import pocket4j.Pocket;
@@ -108,7 +109,8 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			final com.actionbarsherlock.view.MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_refresh:
-			final ArticleListFileUtil fileUtil = new ArticleListFileUtil(this);
+			final ArticleListFileUtil fileUtil = new ArticleListFileUtil(this,
+					mAppWidgetId);
 			fileUtil.deleteList();
 			init();
 			break;
@@ -126,14 +128,16 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 	protected void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		outState.putSerializable("pocket", mPocket);
+		outState.putInt("mAppWidgetId", mAppWidgetId);
+		outState.putSerializable("mPocket", mPocket);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 
-		mPocket = (Pocket) savedInstanceState.getSerializable("pocket");
+		mAppWidgetId = savedInstanceState.getInt("mAppWidgetId");
+		mPocket = (Pocket) savedInstanceState.getSerializable("mPocket");
 	}
 
 	private void init() {
@@ -160,17 +164,17 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			@Override
 			protected List<Item> doInBackground(final Void... params) {
 				final ArticleListFileUtil fileUtil = new ArticleListFileUtil(
-						ArticleListActivity.this);
+						ArticleListActivity.this, mAppWidgetId);
 				final List<Item> loadItems = fileUtil.loadList();
 				if (loadItems != null) {
 					// 保存してある情報があれば、それを表示する
 					return loadItems;
 				}
 
-				final PreferenceUtil preferenceUtil = new PreferenceUtil(
-						ArticleListActivity.this);
+				final SettingPreferenceUtil preferenceUtil = new SettingPreferenceUtil(
+						ArticleListActivity.this, mAppWidgetId);
 				final RetrieveOptions options = RetrieveOptions
-						.createInstance((Map<String, String>) preferenceUtil
+						.createInstance(preferenceUtil
 								.getAll());
 				final List<Item> items = mPocket.get(options);
 				fileUtil.saveList(items);
@@ -217,8 +221,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 	}
 
 	private boolean hasAuthorization() {
-		final PreferenceUtil preferenceUtil = new PreferenceUtil(this);
-		final String accessToken = preferenceUtil
+		final String accessToken = new PreferenceUtil(this)
 				.getString(AuthActivity.PREFERENCE_ACCESS_TOKEN);
 		if (accessToken == null) {
 			return false;

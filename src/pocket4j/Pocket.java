@@ -67,7 +67,7 @@ public class Pocket implements Serializable {
 		try {
 			response = ServerUtil.postJson(url, params);
 		} catch (final IOException e) {
-			throw new RuntimeException(e);
+			return "";
 		}
 
 		return response;

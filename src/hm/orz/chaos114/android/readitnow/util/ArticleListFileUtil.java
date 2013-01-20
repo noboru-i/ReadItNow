@@ -1,4 +1,4 @@
-package hm.orz.chaos114.android.readitnow.ui;
+package hm.orz.chaos114.android.readitnow.util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,21 +11,22 @@ import pocket4j.Item;
 import android.content.Context;
 
 public class ArticleListFileUtil {
-	final Context mContext;
+	private final Context mContext;
+	private final int mAppWidgetId;
 
-	public ArticleListFileUtil(final Context context) {
+	public ArticleListFileUtil(final Context context, final int appWidgetId) {
 		mContext = context;
+		mAppWidgetId = appWidgetId;
 	}
 
 	public void deleteList() {
-		mContext.deleteFile("ArticleList.dat");
+		mContext.deleteFile(getFileName());
 	}
 
 	public void saveList(final List<Item> items) {
 		ObjectOutputStream oos = null;
 		try {
-			oos = new ObjectOutputStream(mContext.openFileOutput(
-					"ArticleList.dat",
+			oos = new ObjectOutputStream(mContext.openFileOutput(getFileName(),
 					Context.MODE_PRIVATE));
 			oos.writeObject(items);
 		} catch (final IOException e) {
@@ -45,8 +46,7 @@ public class ArticleListFileUtil {
 	public List<Item> loadList() {
 		ObjectInputStream ois = null;
 		try {
-			ois = new ObjectInputStream(
-					mContext.openFileInput("ArticleList.dat"));
+			ois = new ObjectInputStream(mContext.openFileInput(getFileName()));
 			final Object object = ois.readObject();
 			return (List<Item>) object;
 		} catch (final ClassNotFoundException e) {
@@ -68,4 +68,7 @@ public class ArticleListFileUtil {
 		}
 	}
 
+	private String getFileName() {
+		return "ArticleList" + mAppWidgetId + ".dat";
+	}
 }

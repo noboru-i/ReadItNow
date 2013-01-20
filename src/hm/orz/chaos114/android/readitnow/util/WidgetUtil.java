@@ -2,12 +2,10 @@ package hm.orz.chaos114.android.readitnow.util;
 
 import hm.orz.chaos114.android.readitnow.R;
 import hm.orz.chaos114.android.readitnow.ui.ArticleListActivity;
-import hm.orz.chaos114.android.readitnow.ui.ArticleListFileUtil;
 import hm.orz.chaos114.android.readitnow.ui.AuthActivity;
 import hm.orz.chaos114.android.util.PreferenceUtil;
 
 import java.util.List;
-import java.util.Map;
 
 import pocket4j.Item;
 import pocket4j.Pocket;
@@ -26,13 +24,14 @@ public class WidgetUtil {
 	/**
 	 * widgetに表示するカウントを更新する。<br>
 	 * カウントはAPIにより最新を取得する。
-	 * 
+	 *
 	 * @param context コンテキスト
 	 * @param appWidgetId ウィジェットのID
 	 */
 	public static void update(final Context context, final int appWidgetId) {
 		// 一旦、"-"で更新（データ取得中もclick時の挙動を可能にするため）
-		updateWidget(context, appWidgetId, getOldCountFromFile(context));
+		updateWidget(context, appWidgetId,
+				getOldCountFromFile(context, appWidgetId));
 
 		final PreferenceUtil preferenceUtil = new PreferenceUtil(context);
 		final String accessToken = preferenceUtil
@@ -42,13 +41,15 @@ public class WidgetUtil {
 			return;
 		}
 
+		final SettingPreferenceUtil settingPreferenceUtil = new SettingPreferenceUtil(
+				context, appWidgetId);
+
 		final Configuration configuration = new Configuration(context);
 		final Authorization authorization = new Authorization();
 		authorization.setAccessToken(accessToken);
 		final Pocket pocket = new Pocket(authorization, configuration);
-		@SuppressWarnings("unchecked")
 		final RetrieveOptions options = RetrieveOptions
-				.createInstance((Map<String, String>) preferenceUtil.getAll());
+				.createInstance(settingPreferenceUtil.getAll());
 
 		new AsyncTask<Void, Void, Integer>() {
 			@Override
@@ -63,8 +64,10 @@ public class WidgetUtil {
 		}.execute((Void) null);
 	}
 
-	private static String getOldCountFromFile(final Context context) {
-		final ArticleListFileUtil fileUtil = new ArticleListFileUtil(context);
+	private static String getOldCountFromFile(final Context context,
+			final int appWidgetId) {
+		final ArticleListFileUtil fileUtil = new ArticleListFileUtil(context,
+				appWidgetId);
 		final List<Item> loadList = fileUtil.loadList();
 		String preCount = "-";
 		if (loadList != null) {
@@ -76,7 +79,7 @@ public class WidgetUtil {
 	/**
 	 * widgetに表示するカウントを更新する。<br>
 	 * カウントは引数より取得する。
-	 * 
+	 *
 	 * @param context コンテキスト
 	 * @param appWidgetId ウィジェットのID
 	 * @param count 表示するカウント
