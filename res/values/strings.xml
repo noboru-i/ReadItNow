@@ -8,8 +8,10 @@
     <string name="dialog_loading_message">Loading...</string>
     <string name="dialog_quit_without_saving">Do you want to quit without saving?</string>
     <string name="dialog_list_without_auth">Please log in as Pocket account.</string>
+    <string name="dialog_confirm_logout">Are you sure you want to logout?</string>
 
     <string name="button_authorize">Authorize</string>
+    <string name="button_logout">logout</string>
 
     <string name="label_authorize_message">Press button and authorize Pocket.\n * When press the button, open browser.</string>
 </resources>

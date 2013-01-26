@@ -1,12 +1,15 @@
 package hm.orz.chaos114.android.readitnow.ui;
 
 import hm.orz.chaos114.android.readitnow.R;
+import hm.orz.chaos114.android.readitnow.util.ArticleListFileUtil;
 import hm.orz.chaos114.android.util.PreferenceUtil;
 import hm.orz.chaos114.android.util.ServerUtil;
 
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -20,11 +23,11 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class AuthActivity extends SherlockFragmentActivity {
-
 	private static final String TAG = AuthActivity.class.getSimpleName();
 
 	private static final String SCHEME = "readitnow";
 	private static final String AUTHORIZATION_FINISHED = "authorizationFinished";
+
 	public static final String PREFERENCE_REQUEST_TOKEN = "request_token";
 	public static final String PREFERENCE_ACCESS_TOKEN = "access_token";
 	public static final String PREFERENCE_USER_NAME = "user_name";
@@ -46,14 +49,36 @@ public class AuthActivity extends SherlockFragmentActivity {
 		}
 	}
 
+	/**
+	 * 認証済み画面を表示する。
+	 */
 	private void showAuthorizedView() {
 		final PreferenceUtil preferenceUtil = new PreferenceUtil(
 				AuthActivity.this);
 
 		// auth_button の設定
 		final Button authButton = (Button) findViewById(R.id.auth_button);
+		authButton.setText(R.string.button_logout);
 		authButton.setEnabled(true);
-		authButton.setOnClickListener(null);
+		authButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				new AlertDialog.Builder(AuthActivity.this)
+						.setMessage(R.string.dialog_confirm_logout)
+						.setPositiveButton("OK",
+								new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(
+											final DialogInterface dialog,
+											final int which) {
+										// ログアウト処理
+										logout();
+									}
+								})
+						.setNegativeButton(android.R.string.cancel, null)
+						.show();
+			}
+		});
 
 		// main_text の設定
 		final String userName = preferenceUtil.getString(PREFERENCE_USER_NAME);
@@ -61,12 +86,16 @@ public class AuthActivity extends SherlockFragmentActivity {
 		view.setText("USERNAME : " + userName);
 	}
 
+	/**
+	 * 未認証画面を表示する。
+	 */
 	private void showUnauthorizedView() {
 		final PreferenceUtil preferenceUtil = new PreferenceUtil(
 				AuthActivity.this);
 
 		// auth_button のイベントを設定
 		final Button authButton = (Button) findViewById(R.id.auth_button);
+		authButton.setText(R.string.button_authorize);
 		authButton.setEnabled(true);
 		authButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -230,6 +259,22 @@ public class AuthActivity extends SherlockFragmentActivity {
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * ログアウト処理を行う。
+	 */
+	private void logout() {
+		// 認証情報を削除
+		final PreferenceUtil preferenceUtil = new PreferenceUtil(this);
+		preferenceUtil.remove(PREFERENCE_USER_NAME);
+		preferenceUtil.remove(PREFERENCE_ACCESS_TOKEN);
+
+		// 記事リストを削除
+		ArticleListFileUtil.deleteListAll(this);
+
+		// 画面表示を未ログイン状態にする
+		showUnauthorizedView();
 	}
 
 	@Override

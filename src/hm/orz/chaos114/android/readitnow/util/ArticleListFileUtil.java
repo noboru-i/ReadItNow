@@ -1,5 +1,7 @@
 package hm.orz.chaos114.android.readitnow.util;
 
+import hm.orz.chaos114.android.readitnow.appwidget.CountWidget;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,6 +10,8 @@ import java.io.StreamCorruptedException;
 import java.util.List;
 
 import pocket4j.Item;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 
 public class ArticleListFileUtil {
@@ -54,6 +58,7 @@ public class ArticleListFileUtil {
 		} catch (final StreamCorruptedException e) {
 			throw new RuntimeException(e);
 		} catch (final FileNotFoundException e) {
+			// 初期状態ではファイルは存在しない
 			return null;
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
@@ -70,5 +75,23 @@ public class ArticleListFileUtil {
 
 	private String getFileName() {
 		return "ArticleList" + mAppWidgetId + ".dat";
+	}
+
+	public static void deleteListAll(final Context context) {
+		final ComponentName thisWidget = new ComponentName(context,
+				CountWidget.class);
+		final int[] appWidgetIds = AppWidgetManager.getInstance(context)
+				.getAppWidgetIds(thisWidget);
+		// 追加済みの全てのwidgetに対してループ
+		for (final int appWidgetId : appWidgetIds) {
+
+			// 保存している記事リストを削除
+			final ArticleListFileUtil util = new ArticleListFileUtil(context,
+					appWidgetId);
+			util.deleteList();
+
+			// widgetの更新
+			WidgetUtil.update(context, appWidgetId);
+		}
 	}
 }

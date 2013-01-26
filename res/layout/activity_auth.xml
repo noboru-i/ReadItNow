@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/text_auth_message"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:text="@string/button_authorize" />
+        android:layout_marginTop="20dp" />
 
 </RelativeLayout>
