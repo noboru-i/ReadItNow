@@ -54,7 +54,11 @@ public class WidgetUtil {
 		new AsyncTask<Void, Void, Integer>() {
 			@Override
 			protected Integer doInBackground(final Void... params) {
-				return pocket.count(options);
+				final List<Item> items = pocket.get(options);
+				final ArticleListFileUtil fileUtil = new ArticleListFileUtil(
+						context, appWidgetId);
+				fileUtil.saveList(items);
+				return items.size();
 			}
 
 			@Override

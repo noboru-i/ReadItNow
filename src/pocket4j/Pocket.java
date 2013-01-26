@@ -107,14 +107,6 @@ public class Pocket implements Serializable {
 		return items;
 	}
 
-	public int count(final RetrieveOptions options) {
-		Log.d(TAG, "#count");
-
-		final List<Item> list = get(options);
-
-		return list.size();
-	}
-
 	public void setAuthorization(final Authorization authorization) {
 		this.authorization = authorization;
 	}

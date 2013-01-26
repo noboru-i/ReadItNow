@@ -14,5 +14,5 @@
     <string name="button_logout">Logout</string>
 
     <string name="label_authorize_message">Press button and authorize Pocket.\n * When press the button, open browser.</string>
-    <string name="label_widget_explanation">1.Long press on any open spot on your Home screen.\n2.Touch Widgets.\n3.Select ReadItNow.</string>
+    <string name="label_widget_explanation">How to add Widget.\n1.Long press on any open spot on your Home screen.\n2.Touch Widgets.\n3.Select ReadItNow.</string>
 </resources>
