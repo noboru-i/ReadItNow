@@ -25,7 +25,18 @@ public class SettingPreferenceUtil {
 
 	@SuppressWarnings("unchecked")
 	public Map<String, String> getAll() {
-		return (Map<String, String>) sp.getAll();
+		final Map<String, String> map = (Map<String, String>) sp.getAll();
+		if (map.size() == 0) {
+			// 初期設定
+			// TODO 初期値がlayout xmlとの２箇所に定義されるため微妙
+			map.put("state", "");
+			map.put("favorite", "");
+			map.put("tag", "");
+			map.put("contentType", "");
+			map.put("sort", "newest");
+			map.put("search", "");
+		}
+		return map;
 	}
 
 	private String getName(final int appWidgetId) {

@@ -109,7 +109,8 @@ public class WidgetUtil {
 		final Intent intent = new Intent(context.getApplicationContext(),
 				ArticleListActivity.class);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+				| Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
 		final PendingIntent pendingIntent = PendingIntent.getActivity(
 				context.getApplicationContext(), appWidgetId, intent, 0);
 
