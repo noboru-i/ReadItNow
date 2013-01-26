@@ -70,7 +70,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		if (!hasAuthorization()) {
 			// 未認証画面を表示
 			setContentView(R.layout.activity_article_list_unauthorize);
-			final TextView textView = (TextView) findViewById(R.id.main_test);
+			final TextView textView = (TextView) findViewById(R.id.text_not_authorize);
 			textView.setText(R.string.dialog_list_without_auth);
 
 			// 未認証時の処理

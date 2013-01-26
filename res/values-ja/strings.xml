@@ -7,5 +7,9 @@
 
     <string name="dialog_loading_message">Loading...</string>
     <string name="dialog_quit_without_saving">保存せずに終了しますか？</string>
-    <string name="dialog_list_without_auth">Pocket(Formerly Read It Later)アカウントで認証を行なってください。</string>
+    <string name="dialog_list_without_auth">Pocketアカウントで認証を行なってください。</string>
+
+    <string name="button_authorize">認証する</string>
+
+    <string name="label_authorize_message">下のボタンを押して、Pocketアカウントで認証を行なってください。\n※ブラウザが起動します。</string>
 </resources>

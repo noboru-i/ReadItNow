@@ -38,8 +38,10 @@ public class AuthActivity extends SherlockFragmentActivity {
 		final String userName = preferenceUtil.getString(PREFERENCE_USER_NAME);
 
 		if (userName != null) {
+			// 認証済み
 			showAuthorizedView();
 		} else {
+			// 未認証
 			showUnauthorizedView();
 		}
 	}
@@ -55,9 +57,8 @@ public class AuthActivity extends SherlockFragmentActivity {
 
 		// main_text の設定
 		final String userName = preferenceUtil.getString(PREFERENCE_USER_NAME);
-		final TextView view = (TextView) AuthActivity.this
-				.findViewById(R.id.main_test);
-		view.setText("Hello " + userName);
+		final TextView view = (TextView) findViewById(R.id.text_auth_message);
+		view.setText("USERNAME : " + userName);
 	}
 
 	private void showUnauthorizedView() {
@@ -100,6 +101,9 @@ public class AuthActivity extends SherlockFragmentActivity {
 				task.execute((Void) null);
 			}
 		});
+
+		final TextView view = (TextView) findViewById(R.id.text_auth_message);
+		view.setText(R.string.label_authorize_message);
 	}
 
 	@Override
