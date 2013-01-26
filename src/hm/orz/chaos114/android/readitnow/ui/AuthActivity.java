@@ -35,7 +35,6 @@ public class AuthActivity extends SherlockFragmentActivity {
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_auth);
 
 		final PreferenceUtil preferenceUtil = new PreferenceUtil(this);
 		final String userName = preferenceUtil.getString(PREFERENCE_USER_NAME);
@@ -53,6 +52,7 @@ public class AuthActivity extends SherlockFragmentActivity {
 	 * 認証済み画面を表示する。
 	 */
 	private void showAuthorizedView() {
+		setContentView(R.layout.activity_auth);
 		final PreferenceUtil preferenceUtil = new PreferenceUtil(
 				AuthActivity.this);
 
@@ -80,16 +80,21 @@ public class AuthActivity extends SherlockFragmentActivity {
 			}
 		});
 
-		// main_text の設定
+		// 認証済みメッセージを表示
 		final String userName = preferenceUtil.getString(PREFERENCE_USER_NAME);
 		final TextView view = (TextView) findViewById(R.id.text_auth_message);
 		view.setText("USERNAME : " + userName);
+
+		// widgetの説明を表示
+		final TextView widgetExplanationView = (TextView) findViewById(R.id.text_widget_explanation);
+		widgetExplanationView.setText(R.string.label_widget_explanation);
 	}
 
 	/**
 	 * 未認証画面を表示する。
 	 */
 	private void showUnauthorizedView() {
+		setContentView(R.layout.activity_auth_unauthorize);
 		final PreferenceUtil preferenceUtil = new PreferenceUtil(
 				AuthActivity.this);
 
