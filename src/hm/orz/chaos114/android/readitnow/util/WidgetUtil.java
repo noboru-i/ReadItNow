@@ -5,6 +5,7 @@ import hm.orz.chaos114.android.readitnow.ui.ArticleListActivity;
 import hm.orz.chaos114.android.readitnow.ui.AuthActivity;
 import hm.orz.chaos114.android.util.PreferenceUtil;
 
+import java.io.IOException;
 import java.util.List;
 
 import pocket4j.Item;
@@ -54,7 +55,13 @@ public class WidgetUtil {
 		new AsyncTask<Void, Void, Integer>() {
 			@Override
 			protected Integer doInBackground(final Void... params) {
-				final List<Item> items = pocket.get(options);
+				List<Item> items;
+				try {
+					items = pocket.retrieve(options);
+				} catch (final IOException e) {
+					// 通信異常時はnullを返す
+					return null;
+				}
 				final ArticleListFileUtil fileUtil = new ArticleListFileUtil(
 						context, appWidgetId);
 				fileUtil.saveList(items);
@@ -63,6 +70,11 @@ public class WidgetUtil {
 
 			@Override
 			protected void onPostExecute(final Integer result) {
+				if (result == null) {
+					// 通信異常時は処理しない
+					return;
+				}
+
 				updateWidget(context, appWidgetId, Integer.toString(result));
 			}
 		}.execute((Void) null);

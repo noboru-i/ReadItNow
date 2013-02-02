@@ -6,6 +6,7 @@ import hm.orz.chaos114.android.readitnow.util.SettingPreferenceUtil;
 import hm.orz.chaos114.android.readitnow.util.WidgetUtil;
 import hm.orz.chaos114.android.util.PreferenceUtil;
 
+import java.io.IOException;
 import java.util.List;
 
 import pocket4j.Item;
@@ -29,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuInflater;
@@ -174,15 +176,27 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 				final SettingPreferenceUtil preferenceUtil = new SettingPreferenceUtil(
 						ArticleListActivity.this, mAppWidgetId);
 				final RetrieveOptions options = RetrieveOptions
-						.createInstance(preferenceUtil
-								.getAll());
-				final List<Item> items = mPocket.get(options);
+						.createInstance(preferenceUtil.getAll());
+				List<Item> items;
+				try {
+					items = mPocket.retrieve(options);
+				} catch (final IOException e) {
+					// 通信異常時はnullを返す
+					return null;
+				}
 				fileUtil.saveList(items);
 				return items;
 			}
 
 			@Override
 			protected void onPostExecute(final List<Item> result) {
+				if (result == null) {
+					// 通信異常時はエラーを表示する
+					Toast.makeText(ArticleListActivity.this, "通信エラーです。",
+							Toast.LENGTH_SHORT).show();
+					dialog.dismiss();
+					return;
+				}
 				final ArticleAdapter adapter = new ArticleAdapter(
 						ArticleListActivity.this, 0, result);
 				final ListView list = (ListView) findViewById(R.id.article_list);

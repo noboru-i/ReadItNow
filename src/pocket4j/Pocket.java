@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class Pocket implements Serializable {
 	private static final String TAG = Pocket.class.getSimpleName();
 
 	public static final String URL_V3_GET = "https://getpocket.com/v3/get";
+	public static final String URL_V3_SEND = "https://getpocket.com/v3/send";
 
 	private Authorization authorization;
 	private final Configuration configuration;
@@ -34,10 +36,9 @@ public class Pocket implements Serializable {
 		this.configuration = configuration;
 	}
 
-	private String fetch(final RetrieveOptions options,
-			final Map<String, Object> map) {
+	private String request(final String url, final Map<String, Object> map)
+			throws IOException {
 
-		final String url = URL_V3_GET;
 		final String consumerKey = configuration.getApiKey();
 		final String accessToken = authorization.getAccessToken();
 
@@ -45,15 +46,6 @@ public class Pocket implements Serializable {
 		try {
 			params.put("consumer_key", consumerKey);
 			params.put("access_token", accessToken);
-			params.put("detailType", "complete");
-			params.put("count", 999); // widgetに表示可能な最大数
-
-			params.put("state", options.getState());
-			params.put("favorite", options.getFavorite());
-			params.put("tag", options.getTag());
-			params.put("contentType", options.getContentType());
-			params.put("sort", options.getSort());
-			params.put("search", options.getSearch());
 			if (map != null) {
 				for (final String key : map.keySet()) {
 					params.put(key, map.get(key));
@@ -63,34 +55,36 @@ public class Pocket implements Serializable {
 			throw new RuntimeException(e);
 		}
 
-		final String response;
-		try {
-			response = ServerUtil.postJson(url, params);
-		} catch (final IOException e) {
-			return "";
-		}
-
-		return response;
+		return ServerUtil.postJson(url, params);
 	}
 
-	public List<Item> get(final RetrieveOptions options) {
+	public List<Item> retrieve(final RetrieveOptions options)
+			throws IOException {
 		Log.d(TAG, "#get");
-		final List<Item> items = new ArrayList<Item>();
-
-		final String response = fetch(options, null);
+		final Map<String, Object> params = new HashMap<String, Object>();
+		params.put("detailType", "complete");
+		params.put("count", 999); // widgetに表示可能な最大数
+		params.put("state", options.getState());
+		params.put("favorite", options.getFavorite());
+		params.put("tag", options.getTag());
+		params.put("contentType", options.getContentType());
+		params.put("sort", options.getSort());
+		params.put("search", options.getSearch());
+		final String response = request(URL_V3_GET, params);
 
 		JSONObject object;
 		try {
 			object = new JSONObject(response);
 		} catch (final JSONException e) {
 			// 空のリストを返す
-			return items;
+			return new ArrayList<Item>();
 		}
 		final JSONObject list = object.optJSONObject("list");
 		if (list == null) {
 			// listが取得できなかったため、空のリストを返す
-			return items;
+			return new ArrayList<Item>();
 		}
+		final List<Item> items = new ArrayList<Item>();
 		final Iterator<?> ite = list.keys();
 		while (ite.hasNext()) {
 			final Item item = new Item(list.optJSONObject((String) ite.next()));
