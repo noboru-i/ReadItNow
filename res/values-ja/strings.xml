@@ -10,6 +10,9 @@
     <string name="dialog_list_without_auth">Pocketアカウントで認証を行なってください。</string>
     <string name="dialog_confirm_logout">ログアウトしますか？</string>
 
+    <string name="toast_network_error">通信エラーです。</string>
+    <string name="toast_data_not_found">データがありませんでした。</string>
+
     <string name="button_authorize">認証する</string>
     <string name="button_logout">ログアウト</string>
 

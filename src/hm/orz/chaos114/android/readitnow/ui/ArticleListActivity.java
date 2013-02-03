@@ -11,6 +11,7 @@ import java.util.List;
 
 import pocket4j.Item;
 import pocket4j.Pocket;
+import pocket4j.Pocket.BasicAction;
 import pocket4j.RetrieveOptions;
 import pocket4j.auth.Authorization;
 import pocket4j.conf.Configuration;
@@ -23,6 +24,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,10 +42,9 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 	private int mAppWidgetId;
 
-	private Pocket mPocket;
-
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
+		Log.d(TAG, "#onCreate");
 		super.onCreate(savedInstanceState);
 
 		final Intent intent = getIntent();
@@ -55,14 +56,6 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			finish();
 			return;
 		}
-
-		// Pocketインスタンスを生成
-		final String accessToken = new PreferenceUtil(this)
-				.getString(AuthActivity.PREFERENCE_ACCESS_TOKEN);
-		final Configuration configuration = new Configuration(this);
-		final Authorization authorization = new Authorization(accessToken);
-		mPocket = new Pocket(authorization, configuration);
-
 	}
 
 	@Override
@@ -91,11 +84,15 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		}
 
 		// 認証されている場合は、リストを表示
+		init();
+	}
+
+	private Pocket createPocketInstance() {
 		final String accessToken = new PreferenceUtil(this)
 				.getString(AuthActivity.PREFERENCE_ACCESS_TOKEN);
+		final Configuration configuration = new Configuration(this);
 		final Authorization authorization = new Authorization(accessToken);
-		mPocket.setAuthorization(authorization);
-		init();
+		return new Pocket(authorization, configuration);
 	}
 
 	@Override
@@ -131,7 +128,6 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		super.onSaveInstanceState(outState);
 
 		outState.putInt("mAppWidgetId", mAppWidgetId);
-		outState.putSerializable("mPocket", mPocket);
 	}
 
 	@Override
@@ -139,7 +135,6 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 
 		mAppWidgetId = savedInstanceState.getInt("mAppWidgetId");
-		mPocket = (Pocket) savedInstanceState.getSerializable("mPocket");
 	}
 
 	private void init() {
@@ -152,8 +147,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			list = (ListView) findViewById(R.id.article_list);
 		}
 
-		final AsyncTask<Void, Void, List<Item>> task = new AsyncTask<Void, Void, List<Item>>() {
-
+		new AsyncTask<Void, Void, List<Item>>() {
 			ProgressDialog dialog;
 
 			@Override
@@ -168,7 +162,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 				final ArticleListFileUtil fileUtil = new ArticleListFileUtil(
 						ArticleListActivity.this, mAppWidgetId);
 				final List<Item> loadItems = fileUtil.loadList();
-				if (loadItems != null) {
+				if (loadItems != null && loadItems.size() != 0) {
 					// 保存してある情報があれば、それを表示する
 					return loadItems;
 				}
@@ -179,7 +173,8 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 						.createInstance(preferenceUtil.getAll());
 				List<Item> items;
 				try {
-					items = mPocket.retrieve(options);
+					final Pocket pocket = createPocketInstance();
+					items = pocket.retrieve(options);
 				} catch (final IOException e) {
 					// 通信異常時はnullを返す
 					return null;
@@ -192,7 +187,8 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			protected void onPostExecute(final List<Item> result) {
 				if (result == null) {
 					// 通信異常時はエラーを表示する
-					Toast.makeText(ArticleListActivity.this, "通信エラーです。",
+					Toast.makeText(ArticleListActivity.this,
+							R.string.toast_network_error,
 							Toast.LENGTH_SHORT).show();
 					dialog.dismiss();
 					return;
@@ -206,9 +202,15 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 						Integer.toString(result.size()));
 
 				dialog.dismiss();
+
+				if (result.size() == 0) {
+					// 表示件数が0の場合はtoastを表示
+					Toast.makeText(ArticleListActivity.this,
+							R.string.toast_data_not_found,
+							Toast.LENGTH_SHORT).show();
+				}
 			}
-		};
-		task.execute((Void) null);
+		}.execute((Void) null);
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -222,6 +224,17 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 				startActivity(intent);
 			}
 		});
+		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(final AdapterView<?> parent,
+					final View view, final int position, final long id) {
+				// 編集ダイアログを表示
+				final Item item = (Item) parent.getItemAtPosition(position);
+				showEditDialog(item);
+				return true;
+			}
+		});
+
 	}
 
 	private void startAuthActivity() {
@@ -232,6 +245,70 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		final Intent intent = new Intent(this, SettingActivity.class);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
 		startActivity(intent);
+	}
+
+	private void showEditDialog(final Item item) {
+		final List<BasicAction> enableAction = item.getEnableModifyAction();
+		final String[] actionNames = new String[enableAction.size()];
+		for (int i = 0; i < enableAction.size(); i++) {
+			actionNames[i] = enableAction.get(i).getActionName();
+		}
+		new AlertDialog.Builder(ArticleListActivity.this).setTitle("Action")
+				.setItems(actionNames, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(final DialogInterface dialog,
+							final int which) {
+						final BasicAction selectedAction = item
+								.getEnableModifyAction().get(which);
+
+						// modifyリクエストをbackgroundで実行するためのタスク
+						new AsyncTask<Void, Void, Boolean>() {
+							ProgressDialog dialog;
+
+							@Override
+							protected void onPreExecute() {
+								dialog = new ProgressDialog(
+										ArticleListActivity.this);
+								dialog.setMessage(getString(R.string.dialog_loading_message));
+								dialog.show();
+							}
+
+							@Override
+							protected Boolean doInBackground(
+									final Void... params) {
+								try {
+									// 更新処理を実行
+									final Pocket pocket = createPocketInstance();
+									pocket.modify(selectedAction,
+											item.getItemId());
+								} catch (final IOException e) {
+									return false;
+								}
+								return true;
+							}
+
+							@Override
+							protected void onPostExecute(final Boolean result) {
+								if (!result) {
+									// IO例外時はエラーメッセージを表示して終了
+									Toast.makeText(ArticleListActivity.this,
+											R.string.toast_network_error,
+											Toast.LENGTH_LONG)
+											.show();
+									dialog.dismiss();
+									return;
+								}
+
+								// 成功した場合は画面データの再取得・再描画
+								dialog.dismiss();
+								final ArticleListFileUtil fileUtil = new ArticleListFileUtil(
+										ArticleListActivity.this, mAppWidgetId);
+								fileUtil.deleteList();
+								init();
+							}
+						}.execute((Void) null);
+					}
+				}).show();
 	}
 
 	private boolean hasAuthorization() {

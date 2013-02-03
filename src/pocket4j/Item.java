@@ -1,9 +1,13 @@
 package pocket4j;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import pocket4j.Pocket.BasicAction;
 
 public class Item implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -44,6 +48,28 @@ public class Item implements Serializable {
 		} catch (final JSONException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public List<BasicAction> getEnableModifyAction() {
+		final List<BasicAction> enableAction = new ArrayList<Pocket.BasicAction>();
+
+		// statusの変更
+		if (status == 1) {
+			enableAction.add(BasicAction.READD);
+		} else {
+			enableAction.add(BasicAction.ARCHIVE);
+		}
+
+		// favoriteの変更
+		if (favorite == 1) {
+			enableAction.add(BasicAction.UNFAVORITE);
+		} else {
+			enableAction.add(BasicAction.FAVORITE);
+		}
+
+		// deleteの実行
+		enableAction.add(BasicAction.DELETE);
+		return enableAction;
 	}
 
 	public int getItemId() {

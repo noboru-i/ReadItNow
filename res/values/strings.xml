@@ -10,6 +10,9 @@
     <string name="dialog_list_without_auth">Please log in as Pocket account.</string>
     <string name="dialog_confirm_logout">Are you sure you want to logout?</string>
 
+    <string name="toast_network_error">Network error occurred.</string>
+    <string name="toast_data_not_found">Data not found.</string>
+
     <string name="button_authorize">Authorize</string>
     <string name="button_logout">Logout</string>
 
