@@ -7,8 +7,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import pocket4j.action.Action;
 import pocket4j.action.modify.ArchiveAction;
+import pocket4j.action.modify.BaseModifyAction;
 import pocket4j.action.modify.DeleteAction;
 import pocket4j.action.modify.FavoriteAction;
 import pocket4j.action.modify.ReaddAction;
@@ -55,8 +55,8 @@ public class Item implements Serializable {
 		}
 	}
 
-	public List<Action> getEnableModifyAction() {
-		final List<Action> enableAction = new ArrayList<Action>();
+	public List<BaseModifyAction> getEnableModifyAction() {
+		final List<BaseModifyAction> enableAction = new ArrayList<BaseModifyAction>();
 
 		// statusの変更
 		if (status == 1) {

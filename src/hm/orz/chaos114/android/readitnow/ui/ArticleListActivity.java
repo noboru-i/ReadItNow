@@ -12,9 +12,10 @@ import java.util.List;
 import pocket4j.Item;
 import pocket4j.Pocket;
 import pocket4j.action.Action;
+import pocket4j.action.modify.BaseModifyAction;
+import pocket4j.action.retrieve.RetrieveAction;
 import pocket4j.auth.Authorization;
 import pocket4j.conf.Configuration;
-import pocket4j.retrieve.RetrieveOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
@@ -169,7 +170,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 				final SettingPreferenceUtil preferenceUtil = new SettingPreferenceUtil(
 						ArticleListActivity.this, mAppWidgetId);
-				final RetrieveOptions options = RetrieveOptions
+				final RetrieveAction options = RetrieveAction
 						.createInstance(preferenceUtil.getAll());
 				List<Item> items;
 				try {
@@ -247,7 +248,8 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 	}
 
 	private void showEditDialog(final Item item) {
-		final List<Action> enableAction = item.getEnableModifyAction();
+		final List<BaseModifyAction> enableAction = item
+				.getEnableModifyAction();
 		final String[] actionNames = new String[enableAction.size()];
 		for (int i = 0; i < enableAction.size(); i++) {
 			actionNames[i] = enableAction.get(i).getActionName();

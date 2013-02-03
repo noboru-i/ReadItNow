@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -19,7 +20,6 @@ import org.json.JSONObject;
 
 import android.net.Uri;
 import android.util.Log;
-
 /**
  * HTTP通信用のユーティリティクラス
  */
@@ -94,17 +94,16 @@ public final class HttpRequestUtil {
 		@Override
 		public String handleResponse(final HttpResponse response)
 				throws ClientProtocolException, IOException {
+			// ステータスコードの確認
+			final int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode != 200) {
+				throw new HttpResponseException(statusCode, "");
+			}
 
+			// レスポンスを文字列にし、返す
 			final String responseString = EntityUtils.toString(response
 					.getEntity());
 			Log.i(TAG, "response = " + responseString);
-			final int statusCode = response.getStatusLine().getStatusCode();
-			// TODO http://getpocket.com/developer/docs/errors
-			// のステータスコードに合わせた例外を発生させる必要がある
-			if (statusCode != 200) {
-				throw new IOException("Request failed. statusCode="
-						+ statusCode);
-			}
 			return responseString;
 		}
 	}

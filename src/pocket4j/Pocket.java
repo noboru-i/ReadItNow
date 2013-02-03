@@ -14,9 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import pocket4j.action.Action;
+import pocket4j.action.retrieve.RetrieveAction;
 import pocket4j.auth.Authorization;
 import pocket4j.conf.Configuration;
-import pocket4j.retrieve.RetrieveOptions;
 import pocket4j.util.HttpRequestUtil;
 import android.util.Log;
 
@@ -61,7 +61,7 @@ public class Pocket implements Serializable {
 		this.configuration = configuration;
 	}
 
-	private String postRequest(final String url, final Map<String, Object> map)
+	private String postRequest(final String url, final Action action)
 			throws IOException {
 
 		final String consumerKey = configuration.getApiKey();
@@ -71,6 +71,7 @@ public class Pocket implements Serializable {
 		try {
 			params.put("consumer_key", consumerKey);
 			params.put("access_token", accessToken);
+			final Map<String, String> map = action.getRequestParams();
 			if (map != null) {
 				for (final String key : map.keySet()) {
 					params.put(key, map.get(key));
@@ -83,19 +84,10 @@ public class Pocket implements Serializable {
 		return HttpRequestUtil.postJson(url, params);
 	}
 
-	public List<Item> retrieve(final RetrieveOptions options)
+	public List<Item> retrieve(final RetrieveAction action)
 			throws IOException {
 		Log.d(TAG, "#retrieve");
-		final Map<String, Object> params = new HashMap<String, Object>();
-		params.put("detailType", "complete");
-		params.put("count", 999); // widgetに表示可能な最大数
-		params.put("state", options.getState());
-		params.put("favorite", options.getFavorite());
-		params.put("tag", options.getTag());
-		params.put("contentType", options.getContentType());
-		params.put("sort", options.getSort());
-		params.put("search", options.getSearch());
-		final String response = postRequest(URL_V3_GET, params);
+		final String response = postRequest(URL_V3_GET, action);
 
 		JSONObject object;
 		try {

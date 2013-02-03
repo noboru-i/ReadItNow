@@ -1,8 +1,11 @@
-package pocket4j.retrieve;
+package pocket4j.action.retrieve;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public class RetrieveOptions {
+import pocket4j.action.Action;
+
+public class RetrieveAction implements Action {
 	private String state;
 	private String favorite;
 	private String tag;
@@ -10,8 +13,8 @@ public class RetrieveOptions {
 	private String sort;
 	private String search;
 
-	public static RetrieveOptions createInstance(final Map<String, String> map) {
-		final RetrieveOptions options = new RetrieveOptions();
+	public static RetrieveAction createInstance(final Map<String, String> map) {
+		final RetrieveAction options = new RetrieveAction();
 		options.setState(map.get("state"));
 		options.setFavorite(map.get("favorite"));
 		options.setTag(map.get("tag"));
@@ -20,6 +23,25 @@ public class RetrieveOptions {
 		options.setSearch(map.get("search"));
 
 		return options;
+	}
+
+	@Override
+	public Method getMethod() {
+		return Method.POST;
+	}
+
+	@Override
+	public Map<String, String> getRequestParams() {
+		final Map<String, Object> params = new HashMap<String, Object>();
+		params.put("detailType", "complete");
+		params.put("count", 999); // widgetに表示可能な最大数
+		params.put("state", state);
+		params.put("favorite", favorite);
+		params.put("tag", tag);
+		params.put("contentType", contentType);
+		params.put("sort", sort);
+		params.put("search", search);
+		return null;
 	}
 
 	public String getState() {
@@ -88,4 +110,5 @@ public class RetrieveOptions {
 		builder.append("]");
 		return builder.toString();
 	}
+
 }

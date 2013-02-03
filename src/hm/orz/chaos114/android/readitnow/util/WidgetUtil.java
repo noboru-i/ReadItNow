@@ -10,9 +10,9 @@ import java.util.List;
 
 import pocket4j.Item;
 import pocket4j.Pocket;
+import pocket4j.action.retrieve.RetrieveAction;
 import pocket4j.auth.Authorization;
 import pocket4j.conf.Configuration;
-import pocket4j.retrieve.RetrieveOptions;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
@@ -49,7 +49,7 @@ public class WidgetUtil {
 		final Authorization authorization = new Authorization();
 		authorization.setAccessToken(accessToken);
 		final Pocket pocket = new Pocket(authorization, configuration);
-		final RetrieveOptions options = RetrieveOptions
+		final RetrieveAction options = RetrieveAction
 				.createInstance(settingPreferenceUtil.getAll());
 
 		new AsyncTask<Void, Void, Integer>() {

@@ -26,6 +26,13 @@ public abstract class BaseModifyAction implements Action {
 		this.time = time;
 	}
 
+	/**
+	 * アクション名を返す。
+	 *
+	 * @return アクション名
+	 */
+	public abstract String getActionName();
+
 	@Override
 	public Method getMethod() {
 		return Method.GET;

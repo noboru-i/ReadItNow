@@ -22,11 +22,4 @@ public interface Action {
 	 * @return リクエストパラメータ
 	 */
 	public abstract Map<String, String> getRequestParams();
-
-	/**
-	 * アクション名を返す。
-	 *
-	 * @return アクション名
-	 */
-	public abstract String getActionName();
 }
