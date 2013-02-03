@@ -120,6 +120,8 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		case R.id.menu_setting:
 			startSettingActivity();
 			break;
+		case R.id.menu_about:
+			startAboutActivity();
 		}
 		return true;
 	}
@@ -243,6 +245,12 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 	private void startSettingActivity() {
 		final Intent intent = new Intent(this, SettingActivity.class);
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+		startActivity(intent);
+	}
+
+	private void startAboutActivity() {
+		final Intent intent = new Intent(this, AboutActivity.class);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
 		startActivity(intent);
 	}

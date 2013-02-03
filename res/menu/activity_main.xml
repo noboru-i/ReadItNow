@@ -22,6 +22,11 @@
                 android:orderInCategory="4"
                 android:showAsAction="always"
                 android:title="@string/menu_setting"/>
+            <item
+                android:id="@+id/menu_about"
+                android:orderInCategory="5"
+                android:showAsAction="always"
+                android:title="@string/menu_about"/>
         </menu>
     </item>
 
