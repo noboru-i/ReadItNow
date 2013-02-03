@@ -1,4 +1,4 @@
-package pocket4j;
+package pocket4j.retrieve;
 
 import java.util.Map;
 
@@ -72,8 +72,20 @@ public class RetrieveOptions {
 
 	@Override
 	public String toString() {
-		return "RetrieveOptions [state=" + state + ", favorite=" + favorite
-				+ ", tag=" + tag + ", contentType=" + contentType + ", sort="
-				+ sort + ", search=" + search + "]";
+		final StringBuilder builder = new StringBuilder();
+		builder.append("RetrieveOptions [state=");
+		builder.append(state);
+		builder.append(", favorite=");
+		builder.append(favorite);
+		builder.append(", tag=");
+		builder.append(tag);
+		builder.append(", contentType=");
+		builder.append(contentType);
+		builder.append(", sort=");
+		builder.append(sort);
+		builder.append(", search=");
+		builder.append(search);
+		builder.append("]");
+		return builder.toString();
 	}
 }

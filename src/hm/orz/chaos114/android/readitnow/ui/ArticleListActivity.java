@@ -11,10 +11,10 @@ import java.util.List;
 
 import pocket4j.Item;
 import pocket4j.Pocket;
-import pocket4j.Pocket.BasicAction;
-import pocket4j.RetrieveOptions;
+import pocket4j.action.Action;
 import pocket4j.auth.Authorization;
 import pocket4j.conf.Configuration;
+import pocket4j.retrieve.RetrieveOptions;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
@@ -234,7 +234,6 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 				return true;
 			}
 		});
-
 	}
 
 	private void startAuthActivity() {
@@ -248,7 +247,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 	}
 
 	private void showEditDialog(final Item item) {
-		final List<BasicAction> enableAction = item.getEnableModifyAction();
+		final List<Action> enableAction = item.getEnableModifyAction();
 		final String[] actionNames = new String[enableAction.size()];
 		for (int i = 0; i < enableAction.size(); i++) {
 			actionNames[i] = enableAction.get(i).getActionName();
@@ -258,7 +257,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 					@Override
 					public void onClick(final DialogInterface dialog,
 							final int which) {
-						final BasicAction selectedAction = item
+						final Action selectedAction = item
 								.getEnableModifyAction().get(which);
 
 						// modifyリクエストをbackgroundで実行するためのタスク
@@ -279,8 +278,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 								try {
 									// 更新処理を実行
 									final Pocket pocket = createPocketInstance();
-									pocket.modify(selectedAction,
-											item.getItemId());
+									pocket.modify(selectedAction);
 								} catch (final IOException e) {
 									return false;
 								}

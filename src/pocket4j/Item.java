@@ -7,7 +7,12 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import pocket4j.Pocket.BasicAction;
+import pocket4j.action.Action;
+import pocket4j.action.modify.ArchiveAction;
+import pocket4j.action.modify.DeleteAction;
+import pocket4j.action.modify.FavoriteAction;
+import pocket4j.action.modify.ReaddAction;
+import pocket4j.action.modify.UnfavoriteAction;
 
 public class Item implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -50,25 +55,25 @@ public class Item implements Serializable {
 		}
 	}
 
-	public List<BasicAction> getEnableModifyAction() {
-		final List<BasicAction> enableAction = new ArrayList<Pocket.BasicAction>();
+	public List<Action> getEnableModifyAction() {
+		final List<Action> enableAction = new ArrayList<Action>();
 
 		// statusの変更
 		if (status == 1) {
-			enableAction.add(BasicAction.READD);
+			enableAction.add(new ReaddAction(itemId));
 		} else {
-			enableAction.add(BasicAction.ARCHIVE);
+			enableAction.add(new ArchiveAction(itemId));
 		}
 
 		// favoriteの変更
 		if (favorite == 1) {
-			enableAction.add(BasicAction.UNFAVORITE);
+			enableAction.add(new UnfavoriteAction(itemId));
 		} else {
-			enableAction.add(BasicAction.FAVORITE);
+			enableAction.add(new FavoriteAction(itemId));
 		}
 
 		// deleteの実行
-		enableAction.add(BasicAction.DELETE);
+		enableAction.add(new DeleteAction(itemId));
 		return enableAction;
 	}
 

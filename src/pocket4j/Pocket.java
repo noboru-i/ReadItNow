@@ -10,12 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import pocket4j.action.Action;
 import pocket4j.auth.Authorization;
 import pocket4j.conf.Configuration;
+import pocket4j.retrieve.RetrieveOptions;
 import pocket4j.util.HttpRequestUtil;
 import android.util.Log;
 
@@ -125,22 +126,10 @@ public class Pocket implements Serializable {
 		return items;
 	}
 
-	public void modify(final BasicAction action, final int itemId)
+	public void modify(final Action action)
 			throws IOException {
-		final JSONArray actions = new JSONArray();
-		try {
-			final JSONObject actionObject = new JSONObject();
-			actionObject.put("action", action.getActionName());
-			actionObject.put("item_id", itemId);
-			actions.put(actionObject);
-		} catch (final JSONException e) {
-			throw new RuntimeException(e);
-		}
 
-		final Map<String, String> params = new HashMap<String, String>();
-		Log.d(TAG, "actions = " + actions.toString());
-		params.put("actions", actions.toString());
-		getRequest(URL_V3_SEND, params);
+		getRequest(URL_V3_SEND, action.getRequestParams());
 
 		// TODO 後処理
 	}
