@@ -1,19 +1,34 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="5dp" >
 
-    <TextView
-        android:id="@+id/row_title"
+    <LinearLayout
+        android:id="@+id/row_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Large" />
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/row_image"
+        android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/row_excerpt"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/row_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.Large" />
+
+        <TextView
+            android:id="@+id/row_excerpt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.Small" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/row_image"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Small" />
+        android:layout_alignParentRight="true"
+        android:contentDescription="image" />
 
-</LinearLayout>
+</RelativeLayout>

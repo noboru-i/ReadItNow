@@ -32,6 +32,7 @@ public class Item implements Serializable {
 	private int wordCount;
 	private int sortId;
 	private JSONObject tags;
+	private Image image;
 
 	public Item(final JSONObject source) {
 		try {
@@ -50,6 +51,7 @@ public class Item implements Serializable {
 			wordCount = source.getInt("word_count");
 			sortId = source.getInt("sort_id");
 			// tags = source.getJSONObject("tags");
+			image = new Image(source.optJSONObject("image"));
 		} catch (final JSONException e) {
 			throw new RuntimeException(e);
 		}
@@ -195,6 +197,14 @@ public class Item implements Serializable {
 
 	public void setTags(final JSONObject tags) {
 		this.tags = tags;
+	}
+
+	public Image getImage() {
+		return image;
+	}
+
+	public void setImage(final Image image) {
+		this.image = image;
 	}
 
 	@Override

@@ -23,13 +23,15 @@ h3 {
 }
 </style>
 <script>
-
+function setVersion(versionName) {
+	document.getElementById('version').innerHTML = versionName;
+}
 </script>
 </head>
 <body>
 <div id="wrap" style="margin: 0 auto;">
 	<img src="icon.png" width="80px" height="80px" class="center">
-	<h1 style="text-align: center;">Read It Now Ver.XXX</h1>
+	<h1 style="text-align: center;">Read It Now Ver.<span id="version"></span></h1>
 	
 	<hr class="mt10">
 	<h2>Developer</h2>

@@ -4,6 +4,7 @@ import hm.orz.chaos114.android.readitnow.R;
 import hm.orz.chaos114.android.readitnow.util.ArticleListFileUtil;
 import hm.orz.chaos114.android.readitnow.util.SettingPreferenceUtil;
 import hm.orz.chaos114.android.readitnow.util.WidgetUtil;
+import hm.orz.chaos114.android.util.ImageCache;
 import hm.orz.chaos114.android.util.PreferenceUtil;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +43,9 @@ import com.actionbarsherlock.view.MenuInflater;
 
 public class ArticleListActivity extends SherlockFragmentActivity {
 	private static final String TAG = ArticleListActivity.class.getSimpleName();
+
+	/** リストに表示する画像をキャッシュするクラス */
+	private final ImageCache imageCache = new ImageCache();
 
 	private int mAppWidgetId;
 
@@ -191,8 +197,8 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 				if (result == null) {
 					// 通信異常時はエラーを表示する
 					Toast.makeText(ArticleListActivity.this,
-							R.string.toast_network_error,
-							Toast.LENGTH_SHORT).show();
+							R.string.toast_network_error, Toast.LENGTH_SHORT)
+							.show();
 					dialog.dismiss();
 					return;
 				}
@@ -209,8 +215,8 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 				if (result.size() == 0) {
 					// 表示件数が0の場合はtoastを表示
 					Toast.makeText(ArticleListActivity.this,
-							R.string.toast_data_not_found,
-							Toast.LENGTH_SHORT).show();
+							R.string.toast_data_not_found, Toast.LENGTH_SHORT)
+							.show();
 				}
 			}
 		}.execute((Void) null);
@@ -301,8 +307,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 									// IO例外時はエラーメッセージを表示して終了
 									Toast.makeText(ArticleListActivity.this,
 											R.string.toast_network_error,
-											Toast.LENGTH_LONG)
-											.show();
+											Toast.LENGTH_LONG).show();
 									dialog.dismiss();
 									return;
 								}
@@ -358,6 +363,25 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			final TextView excerptTextView = (TextView) view
 					.findViewById(R.id.row_excerpt);
 			excerptTextView.setText(item.getExcerpt());
+
+			final ImageView imageView = (ImageView) view
+					.findViewById(R.id.row_image);
+			imageView.setVisibility(View.GONE);
+
+			// 別のレコードとして表示している際に異なった画像を表示しないようにtagを設定
+			imageView.setTag(item.getImage().getSrc());
+			imageCache.attachImage(item.getImage().getSrc(),
+					new ImageCache.ImageSetListener() {
+						@Override
+						public void setImage(final Drawable drawable,
+								final String url) {
+							// 別のレコードとして表示している際に異なった画像を表示しないようにtagを確認
+							if (url.equals(imageView.getTag())) {
+								imageView.setImageDrawable(drawable);
+								imageView.setVisibility(View.VISIBLE);
+							}
+						}
+					});
 			return view;
 		}
 	}

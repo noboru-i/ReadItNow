@@ -32,16 +32,16 @@ public class RetrieveAction implements Action {
 
 	@Override
 	public Map<String, String> getRequestParams() {
-		final Map<String, Object> params = new HashMap<String, Object>();
+		final Map<String, String> params = new HashMap<String, String>();
 		params.put("detailType", "complete");
-		params.put("count", 999); // widgetに表示可能な最大数
+		params.put("count", "999"); // widgetに表示可能な最大数
 		params.put("state", state);
 		params.put("favorite", favorite);
 		params.put("tag", tag);
 		params.put("contentType", contentType);
 		params.put("sort", sort);
 		params.put("search", search);
-		return null;
+		return params;
 	}
 
 	public String getState() {
