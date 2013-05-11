@@ -2,6 +2,7 @@ package hm.orz.chaos114.android.readitnow.util;
 
 import hm.orz.chaos114.android.readitnow.appwidget.CountWidget;
 
+import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -57,6 +58,8 @@ public class ArticleListFileUtil {
 			throw new RuntimeException(e);
 		} catch (final StreamCorruptedException e) {
 			throw new RuntimeException(e);
+		} catch (final EOFException e) {
+			return null;
 		} catch (final FileNotFoundException e) {
 			// 初期状態ではファイルは存在しない
 			return null;
