@@ -189,7 +189,7 @@ public class SettingActivity extends PreferenceActivity {
 				final CharSequence summary = ((ListPreference) preference)
 						.getEntry();
 				preference.setSummary(summary);
-			} else {
+			} else if (preference instanceof EditTextPreference) {
 				preference.setSummary(sharedPreferences.getString(key, ""));
 			}
 		}
