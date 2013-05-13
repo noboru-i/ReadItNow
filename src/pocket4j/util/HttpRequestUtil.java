@@ -74,7 +74,7 @@ public final class HttpRequestUtil {
 		try {
 			httpPost.setHeader(HTTP.CONTENT_TYPE, "application/json");
 			httpPost.setHeader("X-Accept", "application/json");
-			final StringEntity se = new StringEntity(params.toString());
+			final StringEntity se = new StringEntity(params.toString(), "utf-8");
 			httpPost.setEntity(se);
 		} catch (final UnsupportedEncodingException e1) {
 			e1.printStackTrace();
