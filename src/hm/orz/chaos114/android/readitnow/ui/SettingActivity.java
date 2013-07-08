@@ -82,6 +82,7 @@ public class SettingActivity extends PreferenceActivity {
 
 	@Override
 	protected void onStop() {
+		super.onStop();
 		EasyTracker.getInstance().activityStop(this);
 	}
 
