@@ -4,7 +4,7 @@ import hm.orz.chaos114.android.readitnow.R;
 import hm.orz.chaos114.android.readitnow.util.ArticleListFileUtil;
 import hm.orz.chaos114.android.readitnow.util.SettingPreferenceUtil;
 import hm.orz.chaos114.android.readitnow.util.WidgetUtil;
-import hm.orz.chaos114.android.util.ImageCache;
+import hm.orz.chaos114.android.util.BitmapCache;
 import hm.orz.chaos114.android.util.PreferenceUtil;
 
 import java.io.IOException;
@@ -23,7 +23,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,19 +32,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuInflater;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.Volley;
 
 public class ArticleListActivity extends SherlockFragmentActivity {
 	private static final String TAG = ArticleListActivity.class.getSimpleName();
 
 	/** リストに表示する画像をキャッシュするクラス */
-	private final ImageCache imageCache = new ImageCache();
+	private RequestQueue mQueue;
 
 	private int mAppWidgetId;
 
@@ -57,6 +59,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 		final Intent intent = getIntent();
 		mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 				AppWidgetManager.INVALID_APPWIDGET_ID);
+		mQueue = Volley.newRequestQueue(getApplicationContext());
 
 		if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
 			// デフォルト値が返却された場合、終了
@@ -364,24 +367,17 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 					.findViewById(R.id.row_excerpt);
 			excerptTextView.setText(item.getExcerpt());
 
-			final ImageView imageView = (ImageView) view
+			final NetworkImageView imageView = (NetworkImageView) view
 					.findViewById(R.id.row_image);
-			imageView.setVisibility(View.GONE);
+			if (item.getImage().getSrc() == null
+					|| item.getImage().getSrc().length() == 0) {
+				imageView.setVisibility(View.GONE);
+			} else {
+				imageView.setImageUrl(item.getImage().getSrc(),
+						new ImageLoader(mQueue, new BitmapCache()));
+				imageView.setVisibility(View.VISIBLE);
+			}
 
-			// 別のレコードとして表示している際に異なった画像を表示しないようにtagを設定
-			imageView.setTag(item.getImage().getSrc());
-			imageCache.attachImage(item.getImage().getSrc(),
-					new ImageCache.ImageSetListener() {
-						@Override
-						public void setImage(final Drawable drawable,
-								final String url) {
-							// 別のレコードとして表示している際に異なった画像を表示しないようにtagを確認
-							if (url.equals(imageView.getTag())) {
-								imageView.setImageDrawable(drawable);
-								imageView.setVisibility(View.VISIBLE);
-							}
-						}
-					});
 			return view;
 		}
 	}

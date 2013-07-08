@@ -19,4 +19,6 @@
 
     <string name="label_authorize_message">下のボタンを押して、Pocketアカウントで認証を行なってください。\n※ブラウザが起動します。</string>
     <string name="label_widget_explanation">ウィジェットの追加方法\n1.ホーム画面の空いている場所を長押しする。\n2.ウィジェットの貼付けを選択する。\n3.「ReadItNow」を選択する。\n※ 機種によってウィジェットの追加方法が異なります。</string>
+
+    <string name="content_description_row_image">記事画像</string>
 </resources>

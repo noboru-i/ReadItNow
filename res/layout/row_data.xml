@@ -24,11 +24,11 @@
             android:textAppearance="@android:style/TextAppearance.Small" />
     </LinearLayout>
 
-    <ImageView
+    <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/row_image"
         android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:layout_alignParentRight="true"
-        android:contentDescription="image" />
+        android:contentDescription="@string/content_description_row_image" />
 
 </RelativeLayout>
