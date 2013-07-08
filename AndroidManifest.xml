@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="hm.orz.chaos114.android.readitnow"
-    android:versionCode="8"
-    android:versionName="0.3.4"
+    android:versionCode="9"
+    android:versionName="0.3.5"
     android:installLocation="auto" >
 
     <uses-sdk
