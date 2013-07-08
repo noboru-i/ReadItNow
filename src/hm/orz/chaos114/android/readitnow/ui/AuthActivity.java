@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class AuthActivity extends SherlockFragmentActivity {
 	private static final String TAG = AuthActivity.class.getSimpleName();
@@ -46,6 +47,18 @@ public class AuthActivity extends SherlockFragmentActivity {
 			// 未認証
 			showUnauthorizedView();
 		}
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
 	}
 
 	/**

@@ -23,6 +23,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 public class SettingActivity extends PreferenceActivity {
 	private static final String TAG = SettingActivity.class.getSimpleName();
 
@@ -59,6 +61,12 @@ public class SettingActivity extends PreferenceActivity {
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
 	protected void onResume() {
 		super.onResume();
 		getPreferenceScreen().getSharedPreferences()
@@ -70,6 +78,11 @@ public class SettingActivity extends PreferenceActivity {
 		super.onPause();
 		getPreferenceScreen().getSharedPreferences()
 				.unregisterOnSharedPreferenceChangeListener(changeListener);
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance().activityStop(this);
 	}
 
 	@Override

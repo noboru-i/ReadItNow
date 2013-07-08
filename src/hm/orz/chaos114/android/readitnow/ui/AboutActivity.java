@@ -14,6 +14,7 @@ import android.webkit.WebViewClient;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class AboutActivity extends SherlockFragmentActivity {
 	private static final String TAG = AboutActivity.class.getSimpleName();
@@ -65,6 +66,18 @@ public class AboutActivity extends SherlockFragmentActivity {
 
 		// assetのHTMLを読み込み
 		appNameView.loadUrl("file:///android_asset/about.html");
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
 	}
 
 	@Override

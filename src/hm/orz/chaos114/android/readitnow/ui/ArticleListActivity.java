@@ -42,6 +42,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class ArticleListActivity extends SherlockFragmentActivity {
 	private static final String TAG = ArticleListActivity.class.getSimpleName();
@@ -66,6 +67,12 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			finish();
 			return;
 		}
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
 	}
 
 	@Override
@@ -95,6 +102,12 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 		// 認証されている場合は、リストを表示
 		init();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
 	}
 
 	private Pocket createPocketInstance() {
