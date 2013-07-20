@@ -73,6 +73,9 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 	protected void onStart() {
 		super.onStart();
 		EasyTracker.getInstance().activityStart(this);
+
+		// 認証されている場合は、リストを表示
+		init();
 	}
 
 	@Override
@@ -99,9 +102,6 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 							}).show();
 			return;
 		}
-
-		// 認証されている場合は、リストを表示
-		init();
 	}
 
 	@Override
