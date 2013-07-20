@@ -380,6 +380,16 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 					.findViewById(R.id.row_excerpt);
 			excerptTextView.setText(item.getExcerpt());
 
+			final TextView tagsTextView = (TextView) view
+					.findViewById(R.id.row_tags);
+			final String tagString = item.getTagString(", ");
+			if (tagString.length() == 0) {
+				tagsTextView.setVisibility(View.GONE);
+			} else {
+				tagsTextView.setVisibility(View.VISIBLE);
+				tagsTextView.setText(tagString.toString());
+			}
+
 			final NetworkImageView imageView = (NetworkImageView) view
 					.findViewById(R.id.row_image);
 			if (item.getImage().getSrc() == null

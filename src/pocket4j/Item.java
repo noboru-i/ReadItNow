@@ -2,7 +2,10 @@ package pocket4j;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +34,7 @@ public class Item implements Serializable {
 	private int hasVideo;
 	private int wordCount;
 	private int sortId;
-	private JSONObject tags;
+	private Set<String> tags;
 	private Image image;
 
 	public Item(final JSONObject source) {
@@ -50,11 +53,27 @@ public class Item implements Serializable {
 			hasVideo = source.getInt("has_video");
 			wordCount = source.getInt("word_count");
 			sortId = source.getInt("sort_id");
-			// tags = source.getJSONObject("tags");
+			tags = parseTags(source.optJSONObject("tags"));
 			image = new Image(source.optJSONObject("image"));
 		} catch (final JSONException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static Set<String> parseTags(final JSONObject obj) {
+		final Set<String> tags = new LinkedHashSet<String>();
+		if (obj == null) {
+			return tags; // 空のSet
+		}
+
+		@SuppressWarnings("unchecked")
+		final Iterator<Object> it = obj.keys();
+		while (it.hasNext()) {
+			final String key = (String) it.next();
+			tags.add(key);
+		}
+
+		return tags;
 	}
 
 	public List<BaseModifyAction> getEnableModifyAction() {
@@ -191,11 +210,11 @@ public class Item implements Serializable {
 		this.sortId = sortId;
 	}
 
-	public JSONObject getTags() {
+	public Set<String> getTags() {
 		return tags;
 	}
 
-	public void setTags(final JSONObject tags) {
+	public void setTags(final Set<String> tags) {
 		this.tags = tags;
 	}
 
@@ -205,6 +224,23 @@ public class Item implements Serializable {
 
 	public void setImage(final Image image) {
 		this.image = image;
+	}
+
+	/**
+	 * タグを指定した文字列で連結した文字列を返す
+	 *
+	 * @param separator 連結する文字列
+	 * @return 連結した文字列
+	 */
+	public String getTagString(final String separator) {
+		final StringBuilder tagString = new StringBuilder();
+		for (final String tag : getTags()) {
+			if (tagString.length() != 0) {
+				tagString.append(separator);
+			}
+			tagString.append(tag);
+		}
+		return tagString.toString();
 	}
 
 	@Override
