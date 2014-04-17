@@ -16,8 +16,10 @@ import pocket4j.action.modify.DeleteAction;
 import pocket4j.action.modify.FavoriteAction;
 import pocket4j.action.modify.ReaddAction;
 import pocket4j.action.modify.UnfavoriteAction;
+import android.util.Log;
 
 public class Item implements Serializable {
+	private static final String TAG = Item.class.getSimpleName();
 	private static final long serialVersionUID = 1L;
 
 	private int itemId;
@@ -42,20 +44,21 @@ public class Item implements Serializable {
 			itemId = source.getInt("item_id");
 			resolvedId = source.getInt("resolved_id");
 			givenUrl = source.getString("given_url");
-			resolvedUrl = source.getString("resolved_url");
+			resolvedUrl = source.optString("resolved_url");
 			givenTitle = source.getString("given_title");
-			resolvedTitle = source.getString("resolved_title");
+			resolvedTitle = source.optString("resolved_title");
 			favorite = source.getInt("favorite");
 			status = source.getInt("status");
-			excerpt = source.getString("excerpt");
-			isArticle = source.getInt("is_article");
-			hasImage = source.getInt("has_image");
-			hasVideo = source.getInt("has_video");
-			wordCount = source.getInt("word_count");
+			excerpt = source.optString("excerpt");
+			isArticle = source.optInt("is_article");
+			hasImage = source.optInt("has_image");
+			hasVideo = source.optInt("has_video");
+			wordCount = source.optInt("word_count");
 			sortId = source.getInt("sort_id");
 			tags = parseTags(source.optJSONObject("tags"));
 			image = new Image(source.optJSONObject("image"));
 		} catch (final JSONException e) {
+			Log.d(TAG, source.toString());
 			throw new RuntimeException(e);
 		}
 	}
@@ -96,6 +99,22 @@ public class Item implements Serializable {
 		// deleteの実行
 		enableAction.add(new DeleteAction(itemId));
 		return enableAction;
+	}
+
+	public String getUrl() {
+		String url = resolvedUrl;
+		if (url == null || url.length() == 0) {
+			url = givenUrl;
+		}
+		return url;
+	}
+
+	public String getTitle() {
+		String title = resolvedTitle;
+		if (title == null || title.length() == 0) {
+			title = givenTitle;
+		}
+		return title;
 	}
 
 	public int getItemId() {

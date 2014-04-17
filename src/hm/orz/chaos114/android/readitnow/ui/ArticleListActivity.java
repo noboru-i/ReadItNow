@@ -245,7 +245,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 
 				// ブラウザを起動
 				final Intent intent = new Intent(Intent.ACTION_VIEW, Uri
-						.parse(item.getResolvedUrl()));
+						.parse(item.getUrl()));
 				startActivity(intent);
 			}
 		});
@@ -374,7 +374,7 @@ public class ArticleListActivity extends SherlockFragmentActivity {
 			final Item item = mItems.get(position);
 			final TextView titleTextView = (TextView) view
 					.findViewById(R.id.row_title);
-			titleTextView.setText(item.getResolvedTitle());
+			titleTextView.setText(item.getTitle());
 
 			final TextView excerptTextView = (TextView) view
 					.findViewById(R.id.row_excerpt);
